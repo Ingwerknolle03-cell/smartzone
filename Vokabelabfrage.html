@@ -113,7 +113,7 @@
           if (option.la === correct.la) {
             customMessage("✅ Richtig!");
           } else {
-            customMessage(`❌ Falsch. Richtig ist: ${correct.la}`);
+            customMessage(`❌ Falsch du dummi. Richtig wäre ${correct.la}`);
           }
           setTimeout(askQuestion, 1000);
         };
@@ -135,13 +135,13 @@
       if (confirm("Bist du sicher, dass du ALLE Vokabeln löschen willst?")) {
         vocab = [];
         saveVocab();
-        customMessage("Vokabeln wurden gelöscht.");
+        customMessage("Vokabeln wurden loider gelöscht.");
       }
     }
 
     function showVocabList() {
       const listDiv = document.getElementById("vocabList");
-      listDiv.innerHTML = "<h3>📋Lukas seine Vokabeln</h3>";
+      listDiv.innerHTML = "<h3>leer, mach mal mehr xd</h3>";
       vocab.forEach((v, index) => {
         const entry = document.createElement("div");
         entry.className = "vocab-item";
@@ -182,10 +182,10 @@
               saveVocab();
               customMessage("Vokabeln importiert!");
             } else {
-              customMessage("❌ Ungültiges Format", true);
+              customMessage("Ungültiges Format", true);
             }
           } catch {
-            customMessage("❌ Fehler beim Einlesen der Datei", true);
+            customMessage("Fehler beim Einlesen der Datei", true);
           }
         };
         reader.readAsText(file);
