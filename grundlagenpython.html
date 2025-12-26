@@ -24,6 +24,7 @@ body {
     max-width: 95%;
     text-align: left;
     animation: fadeIn 1s;
+    margin-bottom: 30px;
 }
 
 @keyframes fadeIn {
@@ -61,8 +62,27 @@ button {
 
 button:hover { background-color: #2575fc; }
 
-.section {
-    margin-bottom: 15px;
+.tip-btn {
+    background-color: #ffb347;
+    color: #333;
+}
+
+.tip-btn:hover {
+    background-color: #ffcc70;
+}
+
+.answer-btn.correct { background-color: #4caf50; color: white; }
+.answer-btn.wrong { background-color: #f44336; color: white; }
+
+.score {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.question {
+    font-size: 20px;
+    margin-bottom: 20px;
 }
 
 .toc a {
@@ -71,11 +91,15 @@ button:hover { background-color: #2575fc; }
 }
 .toc a:hover { text-decoration: underline; }
 
-.highlight { background-color: #ffefd5; padding: 3px 5px; border-radius: 5px; }
+.feedback {
+    margin-top: 10px;
+    font-weight: bold;
+}
 </style>
 </head>
 <body>
 
+<!-- Handbuch -->
 <div class="container" id="handbookScreen">
     <h1>Python Handbuch</h1>
 
@@ -96,136 +120,375 @@ button:hover { background-color: #2575fc; }
     </div>
 
     <h2 id="basics">1. Grundlagen</h2>
-    <div class="section">
-        <ul>
-            <li><b>Kommentare:</b> Mit <code>#</code> schreiben, z.B. <code># Das ist ein Kommentar</code></li>
-            <li><b>Einrückung:</b> Python verwendet Einrückung statt geschweifter Klammern</li>
-            <li><b>Print:</b> <code>print("Hallo Welt")</code> gibt Text aus</li>
-            <li><b>Python Version prüfen:</b> <code>python --version</code></li>
-        </ul>
-    </div>
+    <ul>
+        <li>Kommentare: <code># Das ist ein Kommentar</code></li>
+        <li>Einrückung wichtig, Python nutzt keine Klammern</li>
+        <li>Print: <code>print("Hallo Welt")</code></li>
+    </ul>
 
     <h2 id="variables">2. Variablen & Datentypen</h2>
-    <div class="section">
-        <ul>
-            <li><b>Integer:</b> Ganze Zahlen, z.B. <code>x = 5</code></li>
-            <li><b>Float:</b> Dezimalzahlen, z.B. <code>pi = 3.14</code></li>
-            <li><b>String:</b> Text in Anführungszeichen, z.B. <code>name = "Anna"</code></li>
-            <li><b>Boolean:</b> Wahr/Falsch, z.B. <code>is_active = True</code></li>
-        </ul>
-    </div>
+    <ul>
+        <li>Integer: <code>x = 5</code></li>
+        <li>Float: <code>pi = 3.14</code></li>
+        <li>String: <code>name = "Anna"</code></li>
+        <li>Boolean: <code>is_active = True</code></li>
+    </ul>
 
     <h2 id="operators">3. Operatoren</h2>
-    <div class="section">
-        <ul>
-            <li>Arithmetische Operatoren: <code>+, -, *, /, %, **, //</code></li>
-            <li>Vergleichsoperatoren: <code>==, !=, >, <, >=, <=</code></li>
-            <li>Logische Operatoren: <code>and, or, not</code></li>
-            <li>Zuweisung: <code>=, +=, -=, *=, /=</code></li>
-        </ul>
-    </div>
+    <ul>
+        <li>+ , - , * , / , %, ** , //</li>
+        <li>== , != , > , < , >= , <=</li>
+        <li>and , or , not</li>
+    </ul>
 
     <h2 id="conditions">4. Bedingungen (if)</h2>
-    <div class="section">
-        <ul>
-            <li>Syntax: <code>if Bedingung:</code></li>
-            <li>Optional: <code>elif</code> und <code>else</code></li>
-            <li>Beispiel:
-                <pre>
+    <pre>
 x = 10
 if x > 5:
     print("Groß")
 else:
     print("Klein")
-                </pre>
-            </li>
-        </ul>
-    </div>
+    </pre>
 
     <h2 id="loops">5. Schleifen (for & while)</h2>
-    <div class="section">
-        <ul>
-            <li><b>for-Schleife:</b> Iteration über eine Liste oder Range
-                <pre>
+    <pre>
 for i in range(5):
     print(i)
-                </pre>
-            </li>
-            <li><b>while-Schleife:</b> Wiederholt solange Bedingung True
-                <pre>
+
 x = 0
 while x &lt; 5:
     print(x)
     x += 1
-                </pre>
-            </li>
-        </ul>
-    </div>
+    </pre>
 
     <h2 id="functions">6. Funktionen</h2>
-    <div class="section">
-        <ul>
-            <li>Definition: <code>def meine_funktion():</code></li>
-            <li>Beispiel:
-                <pre>
+    <pre>
 def add(a, b):
     return a + b
 
 print(add(3,4))  # 7
-                </pre>
-            </li>
-        </ul>
-    </div>
+    </pre>
 
     <h2 id="lists">7. Listen & Dictionaries</h2>
-    <div class="section">
-        <ul>
-            <li><b>Liste:</b> <code>numbers = [1,2,3]</code></li>
-            <li>Zugriff: <code>numbers[0]</code></li>
-            <li><b>Dictionay:</b> <code>person = {"name":"Anna", "age":25}</code></li>
-            <li>Zugriff: <code>person["name"]</code></li>
-        </ul>
-    </div>
+    <pre>
+numbers = [1,2,3]
+print(numbers[0])
+
+person = {"name":"Anna","age":25}
+print(person["name"])
+    </pre>
 
     <h2 id="strings">8. Strings</h2>
-    <div class="section">
-        <ul>
-            <li>Verkettung: <code>"Hallo " + "Welt"</code></li>
-            <li>Länge: <code>len("Hallo")</code></li>
-            <li>Indexing: <code>s[0]</code> für erstes Zeichen</li>
-            <li>Formatierung: <code>f"Name: {name}"</code></li>
-        </ul>
-    </div>
+    <pre>
+"Hallo " + "Welt"
+len("Hallo")
+s[0]
+f"Name: {name}"
+    </pre>
 
     <h2 id="modules">9. Module & Bibliotheken</h2>
-    <div class="section">
-        <ul>
-            <li>Import: <code>import math</code></li>
-            <li>Benutzen: <code>math.sqrt(16)</code></li>
-            <li>Eigene Module erstellen mit <code>.py</code> Dateien</li>
-        </ul>
-    </div>
+    <pre>
+import math
+math.sqrt(16)
+    </pre>
 
     <h2 id="tips">10. Tipps & Best Practices</h2>
-    <div class="section">
-        <ul>
-            <li>Kommentare für Übersichtlichkeit nutzen</li>
-            <li>Variablen sinnvoll benennen</li>
-            <li>Einrückung korrekt verwenden</li>
-            <li>Regelmäßig testen und debuggen</li>
-            <li>Dokumentation und Online-Ressourcen lesen</li>
-        </ul>
-    </div>
+    <ul>
+        <li>Kommentare verwenden</li>
+        <li>Variablen sinnvoll benennen</li>
+        <li>Einrückung korrekt</li>
+        <li>Regelmäßig testen</li>
+        <li>Dokumentation lesen</li>
+    </ul>
 
     <div class="button-container">
         <button onclick="startQuiz()">Zum Quiz</button>
     </div>
 </div>
 
+<!-- Quiz -->
+<div class="container" id="quizScreen" style="display:none;">
+    <h1>Python Lern-Quiz</h1>
+    <div class="score">Punkte: <span id="score">0</span></div>
+    <div class="question" id="question">Lade Frage...</div>
+    <div id="answers"></div>
+    <div id="feedback" class="feedback"></div>
+    <button class="tip-btn" id="tipBtn">Tipp</button>
+    <button id="nextBtn" style="display:none;">Nächste Frage</button>
+</div>
+
 <script>
+// Fragen für Quiz
+const questions = [
+  {
+    question: "Was ist das Ergebnis von 3 + 2 * 2?",
+    answers: [
+      { text: "7", correct: true },
+      { text: "10", correct: false },
+      { text: "8", correct: false },
+      { text: "9", correct: false }
+    ],
+    tip: "Denke an Punkt-vor-Strich-Rechnung."
+  },
+  {
+    question: "Welche Variable ist korrekt benannt?",
+    answers: [
+      { text: "mein_name", correct: true },
+      { text: "2name", correct: false },
+      { text: "mein-name", correct: false },
+      { text: "mein name", correct: false }
+    ],
+    tip: "Variablen dürfen nicht mit Zahlen anfangen und keine Leerzeichen enthalten."
+  },
+  {
+    question: "Welche Ausgabe erzeugt print(len('Python'))?",
+    answers: [
+      { text: "6", correct: true },
+      { text: "5", correct: false },
+      { text: "7", correct: false },
+      { text: "8", correct: false }
+    ],
+    tip: "Zähle die Buchstaben in 'Python'."
+  },
+  {
+    question: "Welches Zeichen wird für Kommentare genutzt?",
+    answers: [
+      { text: "#", correct: true },
+      { text: "//", correct: false },
+      { text: "/* */", correct: false },
+      { text: "<!-- -->", correct: false }
+    ],
+    tip: "In Python beginnt ein Kommentar mit #."
+  },
+  {
+    question: "Was ergibt True and False?",
+    answers: [
+      { text: "False", correct: true },
+      { text: "True", correct: false },
+      { text: "0", correct: false },
+      { text: "1", correct: false }
+    ],
+    tip: "Bei 'and' müssen beide Bedingungen True sein."
+  },
+  {
+    question: "Wie erstellt man eine Liste mit Zahlen 1 bis 5?",
+    answers: [
+      { text: "[1,2,3,4,5]", correct: true },
+      { text: "(1,2,3,4,5)", correct: false },
+      { text: "{1,2,3,4,5}", correct: false },
+      { text: "range(5)", correct: false }
+    ],
+    tip: "Listen werden mit eckigen Klammern erstellt."
+  },
+  {
+    question: "Wie prüft man, ob x gleich 10 ist?",
+    answers: [
+      { text: "x == 10", correct: true },
+      { text: "x = 10", correct: false },
+      { text: "x != 10", correct: false },
+      { text: "x >= 10", correct: false }
+    ],
+    tip: "Doppelte Gleichzeichen prüfen Gleichheit."
+  },
+  {
+    question: "Welche Schleife nutzt man, wenn man unbekannt oft wiederholen will?",
+    answers: [
+      { text: "while", correct: true },
+      { text: "for", correct: false },
+      { text: "if", correct: false },
+      { text: "switch", correct: false }
+    ],
+    tip: "While-Schleife läuft solange Bedingung True ist."
+  },
+  {
+    question: "Wie gibt man den ersten Buchstaben eines Strings s aus?",
+    answers: [
+      { text: "s[0]", correct: true },
+      { text: "s(0)", correct: false },
+      { text: "s.first()", correct: false },
+      { text: "s{0}", correct: false }
+    ],
+    tip: "Python nutzt Indexing mit eckigen Klammern."
+  },
+  {
+    question: "Was passiert, wenn man print('5' + '3') ausführt?",
+    answers: [
+      { text: "53", correct: true },
+      { text: "8", correct: false },
+      { text: "TypeError", correct: false },
+      { text: "5 3", correct: false }
+    ],
+    tip: "Strings werden bei + verkettet, nicht addiert."
+  },
+  {
+    question: "Wie erstellt man ein Dictionary mit Name und Alter?",
+    answers: [
+      { text: '{"name":"Anna","age":25}', correct: true },
+      { text: '["name","Anna","age",25]', correct: false },
+      { text: '("name":"Anna","age":25)', correct: false },
+      { text: '{name="Anna", age=25}', correct: false }
+    ],
+    tip: "Dictionaries verwenden geschweifte Klammern und key:value."
+  },
+  {
+    question: "Was ergibt 10 // 3?",
+    answers: [
+      { text: "3", correct: true },
+      { text: "3.333", correct: false },
+      { text: "4", correct: false },
+      { text: "1", correct: false }
+    ],
+    tip: "// ist ganzzahlige Division."
+  },
+  {
+    question: "Was ergibt 2 ** 3?",
+    answers: [
+      { text: "8", correct: true },
+      { text: "6", correct: false },
+      { text: "9", correct: false },
+      { text: "5", correct: false }
+    ],
+    tip: "** ist Potenzierung in Python."
+  },
+  {
+    question: "Wie beendet man eine while-Schleife vorzeitig?",
+    answers: [
+      { text: "break", correct: true },
+      { text: "stop", correct: false },
+      { text: "exit", correct: false },
+      { text: "continue", correct: false }
+    ],
+    tip: "break beendet die Schleife sofort."
+  },
+  {
+    question: "Was macht 'continue' in einer Schleife?",
+    answers: [
+      { text: "Springt zur nächsten Iteration", correct: true },
+      { text: "Beendet die Schleife", correct: false },
+      { text: "Startet die Schleife neu", correct: false },
+      { text: "Nichts", correct: false }
+    ],
+    tip: "continue überspringt den Rest des aktuellen Durchlaufs."
+  },
+  {
+    question: "Wie ruft man eine Funktion auf, die add(a,b) heißt?",
+    answers: [
+      { text: "add(3,4)", correct: true },
+      { text: "call add(3,4)", correct: false },
+      { text: "add = 3,4", correct: false },
+      { text: "add{3,4}", correct: false }
+    ],
+    tip: "Funktionen werden mit Klammern aufgerufen."
+  },
+  {
+    question: "Was ergibt True or False?",
+    answers: [
+      { text: "True", correct: true },
+      { text: "False", correct: false },
+      { text: "0", correct: false },
+      { text: "1", correct: false }
+    ],
+    tip: "Bei 'or' reicht eine True-Bedingung."
+  },
+  {
+    question: "Wie fügt man ein Element '5' zu einer Liste numbers hinzu?",
+    answers: [
+      { text: "numbers.append(5)", correct: true },
+      { text: "numbers.add(5)", correct: false },
+      { text: "numbers.push(5)", correct: false },
+      { text: "numbers.insert(5)", correct: false }
+    ],
+    tip: "append fügt hinten an."
+  },
+  {
+    question: "Welche Ausgabe erzeugt print(2 * 'abc')?",
+    answers: [
+      { text: "abcabc", correct: true },
+      { text: "abc2", correct: false },
+      { text: "abc abc", correct: false },
+      { text: "Error", correct: false }
+    ],
+    tip: "Strings werden bei * wiederholt."
+  },
+  {
+    question: "Wie prüft man, ob eine Liste leer ist?",
+    answers: [
+      { text: "if not myList:", correct: true },
+      { text: "if myList == None:", correct: false },
+      { text: "if myList = []:", correct: false },
+      { text: "if myList is empty:", correct: false }
+    ],
+    tip: "Leere Listen gelten als False in Bedingungen."
+  }
+];
+
+
+let score = 0;
+let askedQuestions = [];
+let currentQuestion = null;
+
 function startQuiz() {
-    window.location.href = "#quizScreen";
+    document.getElementById('handbookScreen').style.display = 'none';
+    document.getElementById('quizScreen').style.display = 'block';
+    showQuestion();
 }
+
+function getRandomQuestion() {
+    let remaining = questions.filter((_, i) => !askedQuestions.includes(i));
+    if (remaining.length === 0) return null;
+    let idx = Math.floor(Math.random() * remaining.length);
+    let realIdx = questions.indexOf(remaining[idx]);
+    askedQuestions.push(realIdx);
+    return questions[realIdx];
+}
+
+function showQuestion() {
+    document.getElementById('nextBtn').style.display = 'none';
+    document.getElementById('feedback').innerHTML = '';
+    const q = getRandomQuestion();
+    currentQuestion = q;
+    const answersDiv = document.getElementById('answers');
+    answersDiv.innerHTML = '';
+
+    if (!q) {
+        document.getElementById('question').innerText = `Quiz beendet! Du hast ${score} Punkte erreicht.`;
+        document.getElementById('tipBtn').style.display = 'none';
+        return;
+    }
+
+    document.getElementById('question').innerText = q.question;
+
+    q.answers = q.answers.sort(() => Math.random() - 0.5);
+    q.answers.forEach(answer => {
+        const btn = document.createElement('button');
+        btn.innerText = answer.text;
+        btn.classList.add('answer-btn');
+        btn.addEventListener('click', () => selectAnswer(btn, q));
+        answersDiv.appendChild(btn);
+    });
+
+    document.getElementById('tipBtn').onclick = () => alert("Tipp: " + q.tip);
+}
+
+function selectAnswer(btn, q) {
+    const buttons = Array.from(document.getElementById('answers').children);
+    buttons.forEach(b => {
+        b.disabled = true;
+        if (b.innerText === q.answers.find(a => a.correct).text) b.classList.add('correct');
+    });
+
+    if (!q.answers.find(a => a.text === btn.innerText).correct) btn.classList.add('wrong');
+    else score++;
+
+    document.getElementById('score').innerText = score;
+    document.getElementById('feedback').innerHTML = `Richtige Antwort: <b>${q.answers.find(a => a.correct).text}</b>`;
+    document.getElementById('nextBtn').style.display = 'block';
+
+    // Lösung länger anzeigen: 5 Sekunden
+    setTimeout(showQuestion, 5000);
+}
+
+document.getElementById('nextBtn').addEventListener('click', showQuestion);
 </script>
 
 </body>
