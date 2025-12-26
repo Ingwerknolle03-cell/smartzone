@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Vokabelabfrage</title>
+<style>
+body { margin:0; background:#111; color:white; font-family:sans-serif; }
+#top { padding:10px; background:#222; display:flex; gap:10px; align-items:center; }
+button { padding:6px 12px; }
+#answerInput { padding:6px; font-size:16px; width:200px; }
+#editorBox { display:none; position:fixed; top:10%; left:10%; width:80%; height:80%;
+             background:white; color:black; border-radius:8px; padding:10px; }
+#editor { width:100%; height:90%; font-size:16px; }
+#gameCanvas { width:100vw; height:80vh; background:black; display:block; }
+#redbar { width:100vw; height:40px; background:#550000; }
+#answerDisplay { position:fixed; bottom:50px; left:0; width:100%; text-align:center; font-size:22px; color:red; }
+</style>
+</head>
+<body>
+
+<div id="top">
+<button id="editBtn">TXT</button>
+<button id="speedBtn">Start</button>
+<input id="answerInput" placeholder="Antwort eingeben…">
+</div>
+
+<div id="editorBox">
+<textarea id="editor" placeholder="Gib erst die Frage ein in eine Zeile, trenne dann in der Gleichen Zeile mit = die Frage von der dahinter folgenden Antwort"></textarea>
+<br>
+<button id="closeEditor">Speichern & Schließen</button>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+<div id="redbar"></div>
+<div id="answerDisplay"></div>
+
+<script>
+let speed = 0;
+let vocab = [];
+let active = [];
+let canvas = document.getElementById("gameCanvas");
+let ctx = canvas.getContext("2d");
+let W,H;
+
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight * 0.8;
+  W = canvas.width; H = canvas.height;
+}
+resize();
+window.onresize = resize;
+
+// --- TXT Editor ---
+document.getElementById("editBtn").onclick = ()=> {
+  document.getElementById("editorBox").style.display="block";
+};
+document.getElementById("closeEditor").onclick = ()=>{
+  let t = document.getElementById("editor").value.split(/\n/);
+  vocab=[];
+  for(let l of t){
+    let p = l.split("=");
+    if(p.length>=2){
+      vocab.push({q:p[0].trim(), a:p[1].trim()});
+    }
+  }
+  document.getElementById("editorBox").style.display="none";
+};
+
+// --- Speed Button ---
+document.getElementById("speedBtn").onclick = ()=>{
+  speed++;
+  if(speed>10) speed=0;
+  document.getElementById("speedBtn").innerText="Speed: "+speed;
+};
+
+// --- Antwort Eingabe (GEÄNDERT: entfernt immer das UNTERSTE passende Wort) ---
+document.getElementById("answerInput").addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    let val = this.value.trim().toLowerCase();
+
+    // Unterstes Element mit korrekter Antwort suchen
+    let targetIndex = -1;
+    let maxY = -1;
+
+    for (let i = 0; i < active.length; i++) {
+      if (active[i].a.toLowerCase() === val && active[i].y > maxY) {
+        maxY = active[i].y;
+        targetIndex = i;
+      }
+    }
+
+    if (targetIndex !== -1) {
+      active.splice(targetIndex, 1);
+    }
+
+    this.value = "";
+  }
+});
+
+// === TEXT UMBRECHEN ===
+function wrapText(text, x, y, maxWidth, lineHeight) {
+  let words = text.split(" ");
+  let line = "";
+  let lines = [];
+
+  for (let w of words) {
+    let testLine = line + w + " ";
+    let testWidth = ctx.measureText(testLine).width;
+
+    if (testWidth > maxWidth && line !== "") {
+      lines.push(line);
+      line = w + " ";
+    } else {
+      line = testLine;
+    }
+  }
+  lines.push(line);
+
+  for (let i = 0; i < lines.length; i++) {
+    ctx.fillText(lines[i], x, y + i * lineHeight);
+  }
+
+  return lines.length;
+}
+
+// --- Anti Overlap Check ---
+function isOverlapping(x, maxWidth){
+  for(let a of active){
+    let otherWidth = a.maxWidth;
+    if(!(x + maxWidth < a.x || x > a.x + otherWidth)) return true;
+  }
+  return false;
+}
+
+// --- Spawn ---
+function spawn(){
+  if(speed===0) return;
+  if(active.length >= speed) return;
+  if(vocab.length===0) return;
+
+  let v = vocab[Math.floor(Math.random()*vocab.length)];
+
+  let maxWidth = 180;
+
+  for(let tries=0; tries<20; tries++){
+    let x = Math.random() * (W - maxWidth - 20) + 10;
+    if(!isOverlapping(x, maxWidth)){
+      active.push({
+        q:v.q, a:v.a,
+        x:x,
+        y: 0,
+        maxWidth: maxWidth,
+        speed: H/5500000
+      });
+      return;
+    }
+  }
+}
+
+// --- Game Loop ---
+function loop(ts){
+  ctx.clearRect(0,0,W,H);
+
+  if(active.length < speed && speed>0){
+    spawn();
+  }
+
+  ctx.fillStyle = "white";
+  ctx.font="20px sans-serif";
+
+  for(let i=active.length-1;i>=0;i--){
+    let a = active[i];
+
+    let lineHeight = 22;
+    let lineCount = wrapText(a.q, a.x, a.y, a.maxWidth, lineHeight);
+
+    a.y += a.speed * (H/2) * lineCount;
+
+    if(a.y > H){
+      flash();
+      showAnswer(a.a);
+      active.splice(i,1);
+    }
+  }
+
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+// --- Flash ---
+function flash(){
+  let rb = document.getElementById("redbar");
+  rb.style.background="#ff0000";
+  setTimeout(()=>rb.style.background="#550000",150);
+}
+
+// --- Show Answer ---
+function showAnswer(txt){
+  let ad = document.getElementById("answerDisplay");
+  ad.innerText = txt;
+  setTimeout(()=>{ if(ad.innerText===txt) ad.innerText=""; },10000);
+}
+</script>
+
+</body>
+</html>
