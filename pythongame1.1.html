@@ -45,13 +45,35 @@ let menu=document.getElementById("menu");
 let scoreboard=document.getElementById("scoreboard");
 
 // AI CLUSTERS
-const AI_TYPES=[
-  {name:"ChatGPT",color:"cyan",strength:3},
-  {name:"Perplexity",color:"magenta",strength:2},
-  {name:"LLaMA",color:"lime",strength:1},
-  {name:"Bard",color:"orange",strength:2},
-  {name:"Claude",color:"pink",strength:3}
+const AI_TYPES = [
+  // 🟢 Leicht (Anfänger)
+  {name:"LLaMA", color:"lime", strength:1},
+  {name:"Gemma", color:"lightgreen", strength:1},
+  {name:"Phi", color:"lightblue", strength:1},
+  {name:"TinyGPT", color:"#66ffcc", strength:1},
+
+  // 🟡 Mittel
+  {name:"Perplexity", color:"magenta", strength:2},
+  {name:"Bard", color:"orange", strength:2},
+  {name:"Mistral", color:"#00b3b3", strength:2},
+  {name:"Falcon", color:"#cccc00", strength:2},
+  {name:"Cohere", color:"#ff9933", strength:2},
+  {name:"Command-R", color:"#9999ff", strength:2},
+
+  // 🔴 Schwer
+  {name:"ChatGPT", color:"cyan", strength:3},
+  {name:"Claude", color:"pink", strength:3},
+  {name:"DeepSeek", color:"red", strength:3},
+  {name:"Qwen", color:"#ff6666", strength:3},
+  {name:"Grok", color:"#ff00ff", strength:3},
+
+  // 🟣 Sehr schwer / Boss
+  {name:"GPT-4", color:"#00ffff", strength:4},
+  {name:"Claude-Opus", color:"#ff66cc", strength:4},
+  {name:"DeepMind", color:"#6633ff", strength:4},
+  {name:"ASI-Core", color:"#ffffff", strength:5}
 ];
+
 let aiClusters=[];
 let activeCluster=null;
 
