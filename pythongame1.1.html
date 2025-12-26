@@ -83,7 +83,7 @@ function startGame(){
   speed=parseInt(document.getElementById("speedInput").value);
   difficulty=document.getElementById("difficultySelect").value;
   generateInitialClusters(10);
-  setInterval(addRandomCluster,100); // neue Cluster
+  setInterval(addRandomCluster,1000); // neue Cluster
   requestAnimationFrame(gameLoop);
 }
 
