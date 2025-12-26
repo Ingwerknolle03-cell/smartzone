@@ -81,7 +81,7 @@ function startGame(){
   speed=parseInt(document.getElementById("speedInput").value);
   difficulty=document.getElementById("difficultySelect").value;
   generateInitialClusters(30);
-  setInterval(addRandomCluster,30000); // alle 30 Sekunden neue Cluster
+  setInterval(addRandomCluster,3000); // alle 30 Sekunden neue Cluster
   requestAnimationFrame(gameLoop);
 }
 
