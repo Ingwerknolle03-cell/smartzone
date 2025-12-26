@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Advanced Simulation</title>
+<style>
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(120deg, #ff9a9e, #fad0c4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 25px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    width: 500px;
+    text-align: center;
+    animation: fadeIn 1s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9);}
+    to { opacity: 1; transform: scale(1);}
+}
+
+h1 {
+    color: #ff6f61;
+    margin-bottom: 20px;
+}
+
+button {
+    background-color: #6a11cb;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    margin: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #2575fc;
+}
+
+input {
+    padding: 10px;
+    font-size: 16px;
+    width: 80%;
+    margin-bottom: 15px;
+}
+
+.score {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.question {
+    font-size: 18px;
+    margin-bottom: 15px;
+    text-align: left;
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="startScreen">
+    <h1>Python Simulation</h1>
+    <p>Bereit für fortgeschrittene Python-Challenges?</p>
+    <button onclick="startSimulation()">Start</button>
+</div>
+
+<div class="container" id="simScreen" style="display:none;">
+    <h1>Python Simulation</h1>
+    <div class="score">Punkte: <span id="score">0</span></div>
+    <div class="question" id="question">Lade Frage...</div>
+    <input type="text" id="userInput" placeholder="Hier deinen Code oder Wert eingeben">
+    <br>
+    <button id="submitBtn">Prüfen</button>
+    <button id="skipBtn">Überspringen</button>
+</div>
+
+<script>
+const challenges = [
+    {
+        question: "Setze die Variable x auf 10",
+        check: input => input.trim() === "10",
+        explanation: "x = 10"
+    },
+    {
+        question: "Welche Ausgabe ergibt print('Hello' + 'World')?",
+        check: input => input.trim() === "HelloWorld",
+        explanation: "print('Hello' + 'World')"
+    },
+    {
+        question: "Schreibe True wenn 5 > 3, sonst False",
+        check: input => input.trim().toLowerCase() === "true",
+        explanation: "5 > 3 ergibt True"
+    },
+    {
+        question: "Setze die Liste numbers auf [1, 2, 3]",
+        check: input => input.trim() === "1,2,3",
+        explanation: "numbers = [1,2,3] (für Input einfach 1,2,3)"
+    },
+    {
+        question: "Was ergibt len('Python')?",
+        check: input => input.trim() === "6",
+        explanation: "len('Python') = 6"
+    },
+    {
+        question: "Was ist das Ergebnis von 3 * 4?",
+        check: input => input.trim() === "12",
+        explanation: "3 * 4 = 12"
+    },
+    {
+        question: "Wenn x = 5, was ergibt x > 2?",
+        check: input => input.trim().toLowerCase() === "true",
+        explanation: "5 > 2 = True"
+    },
+];
+
+let score = 0;
+let asked = [];
+
+function startSimulation() {
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('simScreen').style.display = 'block';
+    showChallenge();
+}
+
+function getRandomChallenge() {
+    let remaining = challenges.filter((_, i) => !asked.includes(i));
+    if(remaining.length === 0) return null;
+    let idx = Math.floor(Math.random() * remaining.length);
+    let realIdx = challenges.indexOf(remaining[idx]);
+    asked.push(realIdx);
+    return challenges[realIdx];
+}
+
+let currentChallenge = null;
+
+function showChallenge() {
+    const challenge = getRandomChallenge();
+    currentChallenge = challenge;
+    if(!challenge) {
+        document.getElementById('question').innerText = `Simulation beendet! Du hast ${score} Punkte erreicht.`;
+        document.getElementById('userInput').style.display = 'none';
+        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('skipBtn').style.display = 'none';
+        return;
+    }
+    document.getElementById('question').innerText = challenge.question;
+    document.getElementById('userInput').value = '';
+}
+
+document.getElementById('submitBtn').addEventListener('click', () => {
+    const input = document.getElementById('userInput').value;
+    if(currentChallenge.check(input)) {
+        score++;
+        alert("Richtig!");
+    } else {
+        alert("Falsch!");
+    }
+    document.getElementById('score').innerText = score;
+    showChallenge();
+});
+
+document.getElementById('skipBtn').addEventListener('click', () => {
+    showChallenge();
+});
+</script>
+</body>
+</html>
