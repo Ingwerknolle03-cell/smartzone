@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>AI Wurm Overload</title>
+<style>
+body,html {margin:0;padding:0;overflow:hidden;background:#111;color:white;font-family:Arial;}
+#gameCanvas{display:block;background:#222;}
+#overlay{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:#333;border:3px solid #ff0;padding:20px;border-radius:15px;
+  text-align:center; display:none;width:600px;color:white;font-size:26px;z-index:10;
+}
+#overlay button{margin:10px;padding:15px 20px;font-size:22px;border:none;border-radius:10px;cursor:pointer;}
+#scoreboard{position:absolute;top:10px;left:10px;font-size:26px;}
+#menu{position:absolute;top:10px;right:10px;background:#333;padding:15px;border-radius:15px;text-align:center;color:white;font-size:18px;z-index:10;}
+#menu input,#menu select{margin:5px;padding:5px;font-size:16px;width:140px;}
+#menu button{margin:5px;padding:8px 12px;font-size:16px;cursor:pointer;}
+</style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<div id="overlay"></div>
+<div id="menu">
+  Geschwindigkeit: <input type="number" id="speedInput" value="5" min="1" max="20"><br>
+  Schwierigkeit:
+  <select id="difficultySelect">
+    <option value="leicht">Leicht</option>
+    <option value="mittel">Mittel</option>
+    <option value="schwer">Schwer</option>
+  </select><br>
+  <button onclick="saveScore()">Score speichern</button>
+  <button onclick="loadScore()">Score laden</button>
+</div>
+<div id="scoreboard"></div>
+
+<script>
+const canvas=document.getElementById("gameCanvas");
+const ctx=canvas.getContext("2d");
+let cw,ch;
+function resize(){ cw=window.innerWidth; ch=window.innerHeight; canvas.width=cw; canvas.height=ch; }
+window.addEventListener("resize",resize); resize();
+
+// --- GAME VARIABLES ---
+let player={x:0,y:0,trail:[],size:25,length:5,segments:[]};
+let speed=5;
+let score=0;
+let difficulty="leicht";
+let mapOffset={x:0,y:0};
+let keys={};
+let overlay=document.getElementById("overlay");
+let menu=document.getElementById("menu");
+let scoreboard=document.getElementById("scoreboard");
+
+// AI CLUSTERS
+const AI_TYPES=[
+  {name:"ChatGPT",color:"cyan",strength:3},
+  {name:"Perplexity",color:"magenta",strength:2},
+  {name:"LLaMA",color:"lime",strength:1},
+  {name:"Bard",color:"orange",strength:2},
+  {name:"Claude",color:"pink",strength:3}
+];
+let aiClusters=[];
+let activeCluster=null; // Cluster-Stop: nur ein Cluster gleichzeitig
+
+// TASKS
+const tasks=[
+  {q:"3+2=?",a:["4","5","6"],c:1},
+  {q:"print('Hi') ergibt?",a:["Hi","hi","Error"],c:0},
+  {q:"len('Python')=?",a:["5","6","7"],c:1},
+  {q:"2**3=?",a:["6","8","9"],c:1},
+  {q:"'a'+'b'=?",a:["ab","a+b","ba"],c:0},
+  {q:"10//3=?",a:["3","3.33","4"],c:0},
+  {q:"if True and False:",a:["True","False","Error"],c:1},
+  {q:"x=5; x>3?",a:["True","False","Error"],c:0},
+  {q:"for i in range(3): print(i)",a:["0 1 2","1 2 3","0 1 2 3"],c:0},
+  {q:"type(3.14)?",a:["int","float","str"],c:1}
+];
+
+// --- INIT ---
+function startGame(){
+  speed=parseInt(document.getElementById("speedInput").value);
+  difficulty=document.getElementById("difficultySelect").value;
+  generateInitialClusters(30);
+  setInterval(addRandomCluster,30000); // alle 30 Sekunden neue Cluster
+  requestAnimationFrame(gameLoop);
+}
+
+// --- SPAWN ---
+function generateInitialClusters(num){
+  let attempts=0;
+  while(aiClusters.length<num && attempts<1000){
+    attempts++;
+    let type=AI_TYPES[Math.floor(Math.random()*AI_TYPES.length)];
+    let clusterSize=type.strength*3;
+    let cx=(Math.random()-0.5)*2000;
+    let cy=(Math.random()-0.5)*2000;
+    if(checkCollision(cx,cy,80)) continue;
+    let cluster={type:type,x:cx,y:cy,os:[]};
+    for(let j=0;j<clusterSize;j++){
+      let ox=cluster.x+Math.random()*40-20;
+      let oy=cluster.y+Math.random()*40-20;
+      cluster.os.push({x:ox,y:oy});
+    }
+    aiClusters.push(cluster);
+  }
+}
+
+function addRandomCluster(){
+  let type=AI_TYPES[Math.floor(Math.random()*AI_TYPES.length)];
+  let clusterSize=type.strength*3;
+  let cx=(Math.random()-0.5)*(cw*3)+mapOffset.x;
+  let cy=(Math.random()-0.5)*(ch*3)+mapOffset.y;
+  if(checkCollision(cx,cy,80)) return;
+  let cluster={type:type,x:cx,y:cy,os:[]};
+  for(let j=0;j<clusterSize;j++){
+    let ox=cluster.x+Math.random()*40-20;
+    let oy=cluster.y+Math.random()*40-20;
+    cluster.os.push({x:ox,y:oy});
+  }
+  aiClusters.push(cluster);
+}
+
+function checkCollision(x,y,r){
+  for(let c of aiClusters){
+    if(Math.hypot(c.x-x,c.y-y)<r) return true;
+  }
+  return false;
+}
+
+// --- INPUT ---
+window.addEventListener("keydown",e=>keys[e.key]=true);
+window.addEventListener("keyup",e=>keys[e.key]=false);
+
+// --- GAME LOOP ---
+function gameLoop(){
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+function update(){
+  let dx=0,dy=0;
+  if(keys["ArrowUp"]||keys["w"]) dy=-speed;
+  if(keys["ArrowDown"]||keys["s"]) dy=speed;
+  if(keys["ArrowLeft"]||keys["a"]) dx=-speed;
+  if(keys["ArrowRight"]||keys["d"]) dx=speed;
+  mapOffset.x+=dx;
+  mapOffset.y+=dy;
+
+  // player trail
+  player.trail.push({x:player.x,y:player.y});
+  while(player.trail.length>player.length) player.trail.shift();
+
+  // collision check nur, wenn kein Cluster aktiv
+  if(!activeCluster){
+    for(let cluster of aiClusters){
+      for(let o of cluster.os){
+        let px=cw/2;
+        let py=ch/2;
+        if(Math.hypot(px-(o.x-mapOffset.x),py-(o.y-mapOffset.y))<player.size){
+          activeCluster=cluster; // Cluster wird aktiv
+          showTask(cluster);
+          return;
+        }
+      }
+    }
+  }
+}
+
+function draw(){
+  ctx.fillStyle="#222"; ctx.fillRect(0,0,cw,ch);
+
+  // draw AI clusters
+  aiClusters.forEach(cluster=>{
+    cluster.os.forEach(o=>{
+      ctx.fillStyle=cluster.type.color;
+      ctx.fillRect(o.x-mapOffset.x-15,o.y-mapOffset.y-15,30,30);
+    });
+  });
+
+  // draw player worm
+  for(let i=0;i<player.trail.length;i++){
+    let p=player.trail[i];
+    ctx.fillStyle="yellow";
+    ctx.fillRect(cw/2-15+(i-player.trail.length/2),ch/2-15+(i-player.trail.length/2),30,30);
+  }
+
+  // draw collected segments
+  player.segments.forEach(seg=>{
+    ctx.fillStyle=seg.color;
+    ctx.fillRect(cw/2-15+(seg.offsetX),ch/2-15+(seg.offsetY),30,30);
+  });
+
+  ctx.fillStyle="orange";
+  ctx.fillRect(cw/2-15,ch/2-15,30,30);
+
+  scoreboard.innerHTML="Score: "+score;
+}
+
+// --- TASK ---
+function showTask(cluster){
+  overlay.innerHTML="";
+  overlay.style.display="block";
+  let task=tasks[Math.floor(Math.random()*tasks.length)];
+  overlay.innerHTML="<div style='font-size:28px;margin-bottom:15px;'>"+task.q+"</div>";
+  task.a.forEach((ans,i)=>{
+    let btn=document.createElement("button");
+    btn.innerText=ans;
+    btn.onclick=()=>{
+      if(i===task.c){
+        cluster.os.forEach((o,j)=>{
+          player.segments.push({offsetX:o.x-cluster.x, offsetY:o.y-cluster.y, color:cluster.type.color});
+        });
+        score+=cluster.type.strength;
+      }
+      overlay.style.display="none";
+      // remove cluster
+      let index=aiClusters.indexOf(cluster);
+      if(index>-1) aiClusters.splice(index,1);
+      activeCluster=null; // Cluster-Stop deaktiviert, nächstes kann erscheinen
+    };
+    overlay.appendChild(btn);
+  });
+}
+
+// --- SCORE IMPORT / EXPORT ---
+function saveScore(){
+  let data=JSON.stringify({score,playerLength:player.length,segments:player.segments.length});
+  let blob=new Blob([data],{type:"application/json"});
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="score.json";
+  a.click();
+}
+function loadScore(){
+  let input=document.createElement("input");
+  input.type="file";
+  input.accept=".json";
+  input.onchange=e=>{
+    let file=input.files[0];
+    let reader=new FileReader();
+    reader.onload=function(ev){
+      let obj=JSON.parse(ev.target.result);
+      score=obj.score||0;
+      player.length=obj.playerLength||5;
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+// --- START ---
+startGame();
+</script>
+</body>
+</html>
