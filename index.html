@@ -115,13 +115,13 @@ button:hover { background:#0af; box-shadow:0 6px 15px rgba(10,255,255,0.5); }
 }
 .info-box-content.open {
     padding:15px 20px;
-    max-height:500px; /* genug Platz für Text + Button */
+    max-height:500px;
 }
 
 /* Footer */
 .footer-text { text-align:center; padding:40px 20px; font-size:16px; color:#888; }
 
-/* Info Button Panel */
+/* Info Panel */
 #info-panel {
     position:fixed;
     top:70px;
@@ -161,9 +161,9 @@ button:hover { background:#0af; box-shadow:0 6px 15px rgba(10,255,255,0.5); }
 
 <!-- Info Panel -->
 <div id="info-panel">
-    <h3>Allgemeine Informationen</h3>
-    <p>Hier finden Sie eine kurze Übersicht über die Smartzone Hub Seite.</p>
-    <button onclick="location.href='info1.html'">Mehr erfahren</button>
+    <h3>Informationen</h3>
+    <p>Übersicht öffnen?</p>
+    <button onclick="location.href='info1.html'">weiter</button>
 </div>
 
 <!-- Main Content -->
@@ -173,7 +173,7 @@ button:hover { background:#0af; box-shadow:0 6px 15px rgba(10,255,255,0.5); }
     <div class="left-column">
         <div class="accordion-item">
             <div class="accordion-header">
-                <div><img src="bilder/lernspiele.png" alt="Lernspiele" class="section-image">Lernspiele</div>
+                <div><img src="bilder/lernspiele.png" alt="Vokabeltrainer" class="section-image">Lernspiele</div>
                 <span>▼</span>
             </div>
             <div class="accordion-content">
@@ -190,7 +190,7 @@ button:hover { background:#0af; box-shadow:0 6px 15px rgba(10,255,255,0.5); }
 
         <div class="accordion-item">
             <div class="accordion-header">
-                <div><img src="bilder/python.png" alt="Python" class="section-image">Python</div>
+                <div><img src="bilder/python.png" alt="Handbuch/Quizzes/Games" class="section-image">Python</div>
                 <span>▼</span>
             </div>
             <div class="accordion-content">
@@ -203,21 +203,21 @@ button:hover { background:#0af; box-shadow:0 6px 15px rgba(10,255,255,0.5); }
                     <p>Für Nutzer mit abgeschlossenen Grundlagen.</p>
                 </div>
                 <div class="button-container">
-                    <a href="pythongame1.1.html"><button>PythonGAME</button></a>
-                    <p>Für Nutzer mit abgeschlossenen Grundlagen. Speichere deinen Score und spiele weiter wann du willst!</p>
+                    <a href="pythongame1.1.html"><button>GAME V. 1.1 VOLLVERSION</button></a>
+                    <p>Für Nutzer mit abgeschlossenen Grundlagen.</p>
                 </div>
             </div>
         </div>
 
         <div class="accordion-item">
             <div class="accordion-header">
-                <div><img src="bilder/naturspiele.png" alt="Naturspiele" class="section-image">Naturspiele</div>
+                <div><img src="bilder/naturspiele.png" alt="Biologie" class="section-image">Naturspiele</div>
                 <span>▼</span>
             </div>
             <div class="accordion-content">
                 <div class="button-container">
                     <a href="Chronos1.2FungusUpdate.html"><button>CHRONOS V.1.2 Fungus Update</button></a>
-                    <p>Baue ein Biotop. Updates auf Youtube.</p>
+                    <p>Baue ein Biotop. Updates pausiert.</p>
                 </div>
             </div>
         </div>
@@ -308,16 +308,28 @@ document.querySelectorAll('.info-box-header').forEach(header=>{
     });
 });
 
-// Info Panel Button
-document.getElementById('info-btn').addEventListener('click',()=>{
-    const panel = document.getElementById('info-panel');
-    panel.style.display = panel.style.display==='block'?'none':'block';
+// Info Panel Button Öffnen/Schließen + Klick außerhalb
+const infoBtn = document.getElementById('info-btn');
+const infoPanel = document.getElementById('info-panel');
+
+infoBtn.addEventListener('click', (event) => {
+    infoPanel.style.display = infoPanel.style.display==='block' ? 'none' : 'block';
+    event.stopPropagation();
+});
+
+document.addEventListener('click', (event) => {
+    if (infoPanel.style.display==='block' && !infoPanel.contains(event.target) && event.target !== infoBtn) {
+        infoPanel.style.display = 'none';
+    }
+});
+
+infoPanel.addEventListener('click', (event) => {
+    event.stopPropagation();
 });
 </script>
 
 </body>
 </html>
-
 
 
 
