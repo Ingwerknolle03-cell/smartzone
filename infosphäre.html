@@ -3,161 +3,206 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>InfoSphere – Deine Wissenswelt</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+<title>DarkWiki – Deine Wissenswelt</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
+/* Grundlayout */
 body {
     margin:0;
-    padding:0;
-    font-family:'Montserrat', sans-serif;
+    font-family:'Roboto', sans-serif;
     background:#121212;
     color:#e0e0e0;
 }
 header {
-    background: linear-gradient(90deg,#6a11cb,#2575fc);
-    padding:20px;
-    text-align:center;
-    font-size:2em;
-    font-weight:600;
+    background:#1a1a1a;
+    padding:15px 20px;
+    font-size:1.8em;
+    font-weight:700;
     color:#fff;
-}
-.container {
-    max-width:1200px;
-    margin:20px auto;
-    padding:0 20px;
-}
-.search-container {
-    margin-bottom:20px;
     text-align:center;
+    border-bottom:1px solid #333;
 }
-input[type="text"] {
-    width:80%;
-    max-width:500px;
-    padding:10px 15px;
+#main {
+    display:flex;
+    flex-direction:row;
+    min-height:calc(100vh - 60px);
+}
+#toc-container {
+    width:300px;
+    min-width:250px;
+    max-width:350px;
+    border-right:1px solid #333;
+    padding:20px;
+    overflow-y:auto;
+    background:#1e1e1e;
+}
+#toc-container h2 {
+    margin-top:0;
+    font-size:1.2em;
+    border-bottom:1px solid #555;
+    padding-bottom:5px;
+}
+#toc {
+    list-style:none;
+    padding-left:0;
+}
+#toc li {
+    margin:8px 0;
+}
+#toc li a {
+    color:#6a11cb;
+    text-decoration:none;
+}
+#toc li a:hover {
+    text-decoration:underline;
+}
+#content-container {
+    flex:1;
+    padding:30px;
+    overflow-y:auto;
+}
+#searchInput {
+    width:100%;
+    padding:10px;
     border-radius:6px;
     border:none;
+    margin-bottom:15px;
     font-size:16px;
 }
-.card {
-    background:#1e1e1e;
-    padding:15px;
-    margin-bottom:20px;
-    border-radius:12px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.5);
+
+/* Inhalte */
+.content-title {
+    font-size:1.8em;
+    margin-bottom:15px;
+    color:#9c27b0;
 }
-.card h3 {
-    color:#6a11cb;
+.content-text {
+    line-height:1.6;
+    margin-bottom:15px;
 }
-.card img, .card video {
+.content-image, .content-video {
     max-width:100%;
     border-radius:6px;
-    margin-top:10px;
-}
-.card p {
-    margin-top:10px;
-    line-height:1.5;
+    margin:15px 0;
 }
 .no-results {
-    text-align:center;
-    font-size:1.2em;
-    margin-top:40px;
     color:#888;
+    font-style:italic;
+    margin-top:30px;
+}
+
+/* Responsive */
+@media(max-width:900px){
+    #main {
+        flex-direction:column;
+    }
+    #toc-container {
+        width:100%;
+        max-height:200px;
+        border-right:none;
+        border-bottom:1px solid #333;
+    }
+    #content-container {
+        padding:15px;
+    }
 }
 </style>
 </head>
 <body>
-
-<header>InfoSphere – Deine Wissenswelt</header>
-
-<div class="container">
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Suche nach Themen...">
+<header>DarkWiki – Deine Wissenswelt</header>
+<div id="main">
+    <div id="toc-container">
+        <input type="text" id="searchInput" placeholder="Suche Themen...">
+        <h2>Inhaltsverzeichnis</h2>
+        <ul id="toc">
+            <!-- Links werden dynamisch geladen -->
+        </ul>
     </div>
-    <div id="contentArea">
-        <!-- Wissenskarten erscheinen hier -->
+    <div id="content-container">
+        <p>Wähle ein Thema aus dem Inhaltsverzeichnis oder nutze die Suche.</p>
     </div>
-    <div id="noResults" class="no-results" style="display:none;">Keine Inhalte gefunden.</div>
 </div>
 
 <script>
-// Datenbank (kann später in eine JSON-Datei ausgelagert werden)
-const knowledgeData = [
-    {
-        title:"Photosynthese",
-        type:"text",
-        content:"Photosynthese ist der Prozess, bei dem Pflanzen Lichtenergie in chemische Energie umwandeln."
-    },
-    {
-        title:"Das Sonnensystem",
-        type:"video",
-        content:"videos/sonnensystem.mp4"
-    },
-    {
-        title:"Eiffelturm",
-        type:"image",
-        content:"bilder/eiffelturm.jpg"
-    },
-    {
-        title:"Python Grundlagen",
-        type:"text",
-        content:"Python ist eine einfach zu erlernende Programmiersprache für Anfänger und Profis."
-    },
-    {
-        title:"Biologie Video: Pilze",
-        type:"video",
-        content:"videos/pilze.mp4"
+// Daten aus JSON-Datei laden (lokal oder GitHub)
+// Für GitHub-Integration einfach raw JSON URL verwenden
+async function loadKnowledgeData() {
+    try {
+        const response = await fetch('knowledgeData.json');
+        const data = await response.json();
+        return data.sort((a,b)=>a.title.localeCompare(b.title,'de'));
+    } catch(e) {
+        console.error("Fehler beim Laden der Daten:", e);
+        return [];
     }
-];
+}
 
-// Funktion Inhalte rendern
-function renderContent(data) {
-    const container = document.getElementById('contentArea');
-    container.innerHTML = '';
-    if(data.length===0){
-        document.getElementById('noResults').style.display='block';
-        return;
-    }
-    document.getElementById('noResults').style.display='none';
-    data.forEach(item=>{
-        const card = document.createElement('div');
-        card.classList.add('card');
-        const title = document.createElement('h3');
-        title.textContent = item.title;
-        card.appendChild(title);
-
-        if(item.type==='text'){
-            const p = document.createElement('p');
-            p.textContent = item.content;
-            card.appendChild(p);
-        } else if(item.type==='image'){
-            const img = document.createElement('img');
-            img.src = item.content;
-            img.alt = item.title;
-            card.appendChild(img);
-        } else if(item.type==='video'){
-            const video = document.createElement('video');
-            video.src = item.content;
-            video.controls = true;
-            card.appendChild(video);
-        }
-
-        container.appendChild(card);
+function generateTOC(data) {
+    const toc = document.getElementById('toc');
+    toc.innerHTML = '';
+    data.forEach((item,index)=>{
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href="#";
+        link.textContent = item.title;
+        link.addEventListener('click',()=>showContent(item));
+        li.appendChild(link);
+        toc.appendChild(li);
     });
 }
 
-// Initial render
-renderContent(knowledgeData);
+function showContent(item){
+    const container = document.getElementById('content-container');
+    container.innerHTML = '';
+    const title = document.createElement('h1');
+    title.textContent = item.title;
+    title.className='content-title';
+    container.appendChild(title);
 
-// Suche
-document.getElementById('searchInput').addEventListener('input', (e)=>{
-    const query = e.target.value.toLowerCase();
-    const filtered = knowledgeData.filter(item=>{
-        return item.title.toLowerCase().includes(query) || 
-               (item.type==='text' && item.content.toLowerCase().includes(query));
+    if(item.type==='text'){
+        const p = document.createElement('p');
+        p.textContent = item.content;
+        p.className='content-text';
+        container.appendChild(p);
+    } else if(item.type==='image'){
+        const img = document.createElement('img');
+        img.src = item.content;
+        img.alt = item.title;
+        img.className='content-image';
+        container.appendChild(img);
+    } else if(item.type==='video'){
+        const video = document.createElement('video');
+        video.src = item.content;
+        video.controls=true;
+        video.className='content-video';
+        container.appendChild(video);
+    }
+}
+
+// Suche filtert TOC
+function setupSearch(data){
+    const input = document.getElementById('searchInput');
+    input.addEventListener('input',(e)=>{
+        const query = e.target.value.toLowerCase();
+        const filtered = data.filter(item=>{
+            return item.title.toLowerCase().includes(query) || 
+                   (item.type==='text' && item.content.toLowerCase().includes(query));
+        });
+        if(filtered.length===0){
+            document.getElementById('toc').innerHTML='<li class="no-results">Keine Ergebnisse</li>';
+            document.getElementById('content-container').innerHTML='<p class="no-results">Keine Inhalte gefunden.</p>';
+        } else {
+            generateTOC(filtered);
+        }
     });
-    renderContent(filtered);
-});
-</script>
+}
 
+// Initialisierung
+(async function(){
+    const data = await loadKnowledgeData();
+    generateTOC(data);
+    setupSearch(data);
+})();
+</script>
 </body>
 </html>
