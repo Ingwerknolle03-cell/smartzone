@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>InfoSphäre</title>
+<title>InfoSphäre – Textwiki</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 body {
@@ -52,6 +51,7 @@ header {
 #toc li a {
     color:#6a11cb;
     text-decoration:none;
+    font-weight:500;
 }
 #toc li a:hover {
     text-decoration:underline;
@@ -69,25 +69,45 @@ header {
     margin-bottom:15px;
     font-size:16px;
 }
+
+/* Texte / Struktur */
 .content-title {
-    font-size:1.8em;
+    font-size:2em;
     margin-bottom:15px;
     color:#9c27b0;
 }
+.content-subtitle {
+    font-size:1.4em;
+    margin-top:25px;
+    margin-bottom:10px;
+    color:#d05ce3;
+}
 .content-text {
-    line-height:1.6;
+    line-height:1.7;
     margin-bottom:15px;
 }
-.content-image, .content-video {
-    max-width:100%;
-    border-radius:6px;
+.content-blockquote {
+    border-left:3px solid #6a11cb;
+    padding-left:15px;
+    font-style:italic;
+    color:#ccc;
     margin:15px 0;
 }
-.no-results {
-    color:#888;
-    font-style:italic;
-    margin-top:30px;
+.content-code {
+    background:#1e1e1e;
+    border:1px solid #333;
+    border-radius:6px;
+    padding:10px;
+    font-family:monospace;
+    overflow-x:auto;
+    margin:10px 0;
 }
+ul, ol {
+    margin-left:20px;
+    margin-bottom:15px;
+}
+
+/* Responsive */
 @media(max-width:900px){
     #main {
         flex-direction:column;
@@ -105,7 +125,7 @@ header {
 </style>
 </head>
 <body>
-<header>InfoSphäre</header>
+<header>InfoSphäre – Textwiki</header>
 <div id="main">
     <div id="toc-container">
         <input type="text" id="searchInput" placeholder="Suche Themen...">
@@ -118,32 +138,62 @@ header {
 </div>
 
 <script>
-// Datenbank als JS-Variable
+// Datenbank: Nur Texte & Unterkapitel
 const knowledgeData = [
   {
     "title": "Biologie: Photosynthese",
     "type": "text",
-    "content": "Photosynthese ist der Prozess, bei dem Pflanzen Lichtenergie in chemische Energie umwandeln."
+    "content": `
+<h2 class="content-subtitle">Definition</h2>
+<p class="content-text">Photosynthese ist der Prozess, bei dem Pflanzen Lichtenergie in chemische Energie umwandeln.</p>
+<h2 class="content-subtitle">Ablauf</h2>
+<p class="content-text">Die Fotosynthese findet in Chloroplasten statt. Lichtenergie wird genutzt, um Wasser und Kohlendioxid in Glucose und Sauerstoff umzuwandeln.</p>
+<ul>
+<li>Lichtreaktion: Wasser wird gespalten, ATP entsteht.</li>
+<li>Dunkelreaktion: CO₂ wird fixiert, Zucker entsteht.</li>
+</ul>
+<h2 class="content-subtitle">Bedeutung</h2>
+<p class="content-text">Photosynthese liefert Energie für Pflanzen und somit für alle Lebewesen in der Nahrungskette.</p>
+`
   },
   {
     "title": "Das Sonnensystem",
-    "type": "video",
-    "content": "videos/sonnensystem.mp4"
-  },
-  {
-    "title": "Eiffelturm",
-    "type": "image",
-    "content": "bilder/eiffelturm.jpg"
+    "type": "text",
+    "content": `
+<h2 class="content-subtitle">Aufbau</h2>
+<p class="content-text">Unser Sonnensystem besteht aus der Sonne, acht Planeten, Zwergplaneten, Monden und Asteroiden.</p>
+<h2 class="content-subtitle">Planeten</h2>
+<ol>
+<li>Merkur</li>
+<li>Venus</li>
+<li>Erde</li>
+<li>Mars</li>
+<li>Jupiter</li>
+<li>Saturn</li>
+<li>Uranus</li>
+<li>Neptun</li>
+</ol>
+<h2 class="content-subtitle">Besonderheiten</h2>
+<p class="content-text content-blockquote">Jeder Planet hat einzigartige Eigenschaften und Atmosphären.</p>
+`
   },
   {
     "title": "Python Grundlagen",
     "type": "text",
-    "content": "Python ist eine einfach zu erlernende Programmiersprache für Anfänger und Profis."
-  },
-  {
-    "title": "Biologie Video: Pilze",
-    "type": "video",
-    "content": "videos/pilze.mp4"
+    "content": `
+<h2 class="content-subtitle">Einführung</h2>
+<p class="content-text">Python ist eine beliebte Programmiersprache für Anfänger und Profis.</p>
+<h2 class="content-subtitle">Beispiele</h2>
+<p class="content-code">print("Hallo Welt!")</p>
+<p class="content-code">for i in range(5):<br>&nbsp;&nbsp;print(i)</p>
+<h2 class="content-subtitle">Anwendungsbereiche</h2>
+<ul>
+<li>Webentwicklung</li>
+<li>Data Science</li>
+<li>Automatisierung</li>
+<li>Künstliche Intelligenz</li>
+</ul>
+`
   }
 ];
 
@@ -175,22 +225,9 @@ function showContent(item){
     container.appendChild(title);
 
     if(item.type==='text'){
-        const p = document.createElement('p');
-        p.textContent = item.content;
-        p.className='content-text';
-        container.appendChild(p);
-    } else if(item.type==='image'){
-        const img = document.createElement('img');
-        img.src = item.content;
-        img.alt = item.title;
-        img.className='content-image';
-        container.appendChild(img);
-    } else if(item.type==='video'){
-        const video = document.createElement('video');
-        video.src = item.content;
-        video.controls=true;
-        video.className='content-video';
-        container.appendChild(video);
+        const div = document.createElement('div');
+        div.innerHTML = item.content;
+        container.appendChild(div);
     }
 }
 
@@ -201,7 +238,7 @@ function setupSearch(data){
         const query = e.target.value.toLowerCase();
         const filtered = data.filter(item=>{
             return item.title.toLowerCase().includes(query) || 
-                   (item.type==='text' && item.content.toLowerCase().includes(query));
+                   item.content.toLowerCase().includes(query);
         });
         if(filtered.length===0){
             document.getElementById('toc').innerHTML='<li class="no-results">Keine Ergebnisse</li>';
