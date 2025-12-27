@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -6,7 +7,6 @@
 <title>InfoSphäre</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-/* Grundlayout */
 body {
     margin:0;
     font-family:'Roboto', sans-serif;
@@ -69,8 +69,6 @@ header {
     margin-bottom:15px;
     font-size:16px;
 }
-
-/* Inhalte */
 .content-title {
     font-size:1.8em;
     margin-bottom:15px;
@@ -90,8 +88,6 @@ header {
     font-style:italic;
     margin-top:30px;
 }
-
-/* Responsive */
 @media(max-width:900px){
     #main {
         flex-direction:column;
@@ -114,9 +110,7 @@ header {
     <div id="toc-container">
         <input type="text" id="searchInput" placeholder="Suche Themen...">
         <h2>Inhaltsverzeichnis</h2>
-        <ul id="toc">
-            <!-- Links werden dynamisch geladen -->
-        </ul>
+        <ul id="toc"></ul>
     </div>
     <div id="content-container">
         <p>Wähle ein Thema aus dem Inhaltsverzeichnis oder nutze die Suche.</p>
@@ -124,9 +118,8 @@ header {
 </div>
 
 <script>
-// Daten aus JSON-Datei laden (lokal oder GitHub)
-
-[
+// Datenbank als JS-Variable
+const knowledgeData = [
   {
     "title": "Biologie: Photosynthese",
     "type": "text",
@@ -152,24 +145,16 @@ header {
     "type": "video",
     "content": "videos/pilze.mp4"
   }
-]
+];
 
-// Für GitHub-Integration einfach raw JSON URL verwenden
-async function loadKnowledgeData() {
-    try {
-        const response = await fetch('knowledgeData.json');
-        const data = await response.json();
-        return data.sort((a,b)=>a.title.localeCompare(b.title,'de'));
-    } catch(e) {
-        console.error("Fehler beim Laden der Daten:", e);
-        return [];
-    }
-}
+// Alphabetisch sortieren
+knowledgeData.sort((a,b)=>a.title.localeCompare(b.title,'de'));
 
+// TOC generieren
 function generateTOC(data) {
     const toc = document.getElementById('toc');
     toc.innerHTML = '';
-    data.forEach((item,index)=>{
+    data.forEach(item=>{
         const li = document.createElement('li');
         const link = document.createElement('a');
         link.href="#";
@@ -180,6 +165,7 @@ function generateTOC(data) {
     });
 }
 
+// Inhalt anzeigen
 function showContent(item){
     const container = document.getElementById('content-container');
     container.innerHTML = '';
@@ -227,11 +213,8 @@ function setupSearch(data){
 }
 
 // Initialisierung
-(async function(){
-    const data = await loadKnowledgeData();
-    generateTOC(data);
-    setupSearch(data);
-})();
+generateTOC(knowledgeData);
+setupSearch(knowledgeData);
 </script>
 </body>
 </html>
