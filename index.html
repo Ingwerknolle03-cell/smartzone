@@ -128,38 +128,44 @@ button:hover {
     padding:20px;
 }
 
-/* 🔥 SmartZone Highlight */
+/* 🔥 SmartZone Highlight – dezent */
 .info-box.smartzone-highlight {
-    background:linear-gradient(135deg,#2575fc,#6a11cb);
-    box-shadow:0 0 45px rgba(106,17,203,0.9);
-    animation:glow 3s infinite;
-}
-.smartzone-highlight .info-box-header {
-    background:rgba(0,0,0,0.25);
-    color:white;
-    font-size:1.6em;
-}
-.smartzone-highlight .info-box-content {
-    color:white;
-    font-size:1.15em;
-}
-.smartzone-highlight button {
-    background:linear-gradient(90deg,#00c6ff,#0072ff);
-    border-radius:40px;
-    font-size:1.2em;
-    padding:15px 35px;
-    box-shadow:0 0 30px rgba(0,198,255,0.9);
-    animation:pulse 2s infinite;
+    background:linear-gradient(135deg,#2d3f6f,#4a2f6f);
+    box-shadow:0 0 18px rgba(106,17,203,0.45);
+    animation:glow 6s infinite ease-in-out;
 }
 
-@keyframes glow {
-    0% { box-shadow:0 0 25px rgba(106,17,203,0.6); }
-    50% { box-shadow:0 0 55px rgba(0,170,255,0.9); }
-    100% { box-shadow:0 0 25px rgba(106,17,203,0.6); }
+.smartzone-highlight .info-box-header {
+    background:rgba(0,0,0,0.35);
+    color:#f0f0f0;
+    font-size:1.45em;
 }
+
+.smartzone-highlight .info-box-content {
+    color:#e6e6e6;
+    font-size:1.1em;
+}
+
+.smartzone-highlight button {
+    background:linear-gradient(90deg,#3aa0c8,#2b6fae);
+    border-radius:30px;
+    font-size:1.05em;
+    padding:13px 30px;
+    box-shadow:0 0 12px rgba(80,160,220,0.45);
+    animation:pulse 4s infinite ease-in-out;
+}
+
+/* 🌫️ Sanfter Glow */
+@keyframes glow {
+    0%   { box-shadow:0 0 14px rgba(106,17,203,0.35); }
+    50%  { box-shadow:0 0 22px rgba(120,150,220,0.45); }
+    100% { box-shadow:0 0 14px rgba(106,17,203,0.35); }
+}
+
+/* 🔄 Mini-Pulse */
 @keyframes pulse {
-    0% { transform:scale(1); }
-    50% { transform:scale(1.08); }
+    0%   { transform:scale(1); }
+    50%  { transform:scale(1.03); }
     100% { transform:scale(1); }
 }
 
