@@ -41,7 +41,7 @@ header {
 }
 .header-right button:hover { background:#0af; }
 
-/* Main */
+/* Layout */
 .main-container {
     display:flex;
     flex-wrap:wrap;
@@ -76,7 +76,10 @@ header {
     transition:max-height 0.5s ease;
     background:#1a1a1a;
 }
-.button-container { padding:20px; border-bottom:1px solid #333; }
+.button-container {
+    padding:20px;
+    border-bottom:1px solid #333;
+}
 .button-container:last-child { border-bottom:none; }
 
 button {
@@ -125,16 +128,11 @@ button:hover {
     padding:20px;
 }
 
-/* ===== SMARTZONE HIGHLIGHT ===== */
+/* 🔥 SmartZone Highlight */
 .info-box.smartzone-highlight {
-    background: linear-gradient(135deg,#2575fc,#6a11cb);
-    border-radius:20px;
+    background:linear-gradient(135deg,#2575fc,#6a11cb);
     box-shadow:0 0 45px rgba(106,17,203,0.9);
     animation:glow 3s infinite;
-}
-.smartzone-highlight:hover {
-    transform:scale(1.05) translateY(-5px);
-    box-shadow:0 0 65px rgba(0,170,255,1);
 }
 .smartzone-highlight .info-box-header {
     background:rgba(0,0,0,0.25);
@@ -153,11 +151,7 @@ button:hover {
     box-shadow:0 0 30px rgba(0,198,255,0.9);
     animation:pulse 2s infinite;
 }
-.smartzone-highlight button:hover {
-    transform:scale(1.15);
-}
 
-/* Animations */
 @keyframes glow {
     0% { box-shadow:0 0 25px rgba(106,17,203,0.6); }
     50% { box-shadow:0 0 55px rgba(0,170,255,0.9); }
@@ -215,17 +209,78 @@ button:hover {
 
 <div class="main-container">
 
+<!-- LEFT COLUMN – VOLLSTÄNDIG -->
 <div class="left-column">
-    <!-- LEFT COLUMN UNVERÄNDERT -->
+
+    <!-- Lernspiele -->
+    <div class="accordion-item">
+        <div class="accordion-header">Lernspiele <span>▼</span></div>
+        <div class="accordion-content">
+            <div class="button-container">
+                <a href="vokabeltrainer.html"><button>Spaßiger Vokabeltrainer</button></a>
+                <p>Trainiere neue und alte Vokabeln.</p>
+            </div>
+            <div class="button-container">
+                <a href="Vokabelabfrage.html"><button>Pure Vokabelabfrage</button></a>
+                <p>Einfaches Lernspiel mit Import/Export.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Python -->
+    <div class="accordion-item">
+        <div class="accordion-header">Python <span>▼</span></div>
+        <div class="accordion-content">
+            <div class="button-container">
+                <a href="grundlagenpython.html"><button>Python Grundlagen</button></a>
+                <p>(DEMO) Handbuch & Quizzes.</p>
+            </div>
+            <div class="button-container">
+                <a href="fortgeschrittenesPython.html"><button>Fortgeschrittenes Python</button></a>
+                <p>Für Nutzer mit abgeschlossenen Grundlagen.</p>
+            </div>
+            <div class="button-container">
+                <a href="pythongame1.1.html"><button>GAME V.1.1 VOLLVERSION</button></a>
+                <p>Für Nutzer mit abgeschlossenen Grundlagen.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Naturspiele -->
+    <div class="accordion-item">
+        <div class="accordion-header">Naturspiele <span>▼</span></div>
+        <div class="accordion-content">
+            <div class="button-container">
+                <a href="Chronos1.2FungusUpdate.html"><button>CHRONOS V.1.2 Fungus Update</button></a>
+                <p>Baue ein Biotop. Updates pausiert.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Allgemeinwissen -->
+    <div class="accordion-item">
+        <div class="accordion-header">Allgemeinwissen <span>▼</span></div>
+        <div class="accordion-content">
+            <div class="button-container">
+                <a href="dasgroßeQuiz.html"><button>Das große Quiz</button></a>
+                <p>DEMO Version</p>
+            </div>
+            <div class="button-container">
+                <a href="mehrspielerQuiz.html"><button>Mehrspieler Quiz</button></a>
+                <p>VOLLVERSION FREE</p>
+            </div>
+        </div>
+    </div>
+
 </div>
 
+<!-- RIGHT COLUMN -->
 <div class="right-column">
 
-    <!-- ✨ Highlight SmartZone -->
+    <!-- 🔥 Highlight -->
     <div class="info-box smartzone-highlight">
         <div class="info-box-header">
-            <span>🚀 SmartZone</span>
-            <span>▼</span>
+            <span>🚀 SmartZone</span><span>▼</span>
         </div>
         <div class="info-box-content">
             <p><strong>Ein neues Internet.</strong><br>Interaktive Inhalte & Experimente.</p>
@@ -233,15 +288,14 @@ button:hover {
         </div>
     </div>
 
-    <!-- 🟣 Normale SmartZone -->
+    <!-- Normal -->
     <div class="info-box">
         <div class="info-box-header">
-            <span>SmartZone (Classic)</span>
-            <span>▼</span>
+            <span>SmartZone</span><span>▼</span>
         </div>
         <div class="info-box-content">
-            <p>Die klassische SmartZone ohne Effekte.</p>
-            <button onclick="location.href='infosphäre.html'">Besuchen</button>
+            <p>Ein neues Internet. Interessante Inhalte.</p>
+            <button onclick="location.href='infosphäre.html'">SmartZone besuchen</button>
         </div>
     </div>
 
@@ -286,12 +340,14 @@ infoBtn.onclick=e=>{
     e.stopPropagation();
 };
 document.addEventListener('click',e=>{
-    if(!infoPanel.contains(e.target)&&e.target!==infoBtn) infoPanel.style.display='none';
+    if(!infoPanel.contains(e.target)&&e.target!==infoBtn)
+        infoPanel.style.display='none';
 });
 </script>
 
 </body>
 </html>
+
 
 
 
