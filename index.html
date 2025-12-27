@@ -37,11 +37,7 @@ header {
     position: relative;
     cursor: pointer;
     font-family: 'Fira Code', monospace;
-}
-
-header h1 {
-    font-size: 2.5em;
-    transition: color 0.3s;
+    transition: all 0.3s ease;
 }
 
 header:hover h1 {
@@ -141,15 +137,33 @@ header p {
     overflow: hidden;
     transition: max-height 0.5s ease, padding 0.3s ease;
     background: #1a1a1a;
+    padding: 0 20px;
 }
 
 .accordion-content .button-container {
-    padding: 20px;
+    padding: 20px 0;
     border-bottom: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .accordion-content .button-container:last-child {
     border-bottom: none;
+}
+
+/* Bilder für Sections */
+.section-image {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    transition: transform 0.3s;
+}
+
+.section-image:hover {
+    transform: scale(1.03);
 }
 
 button {
@@ -183,6 +197,14 @@ button:hover {
     .accordion, .overview-panel {
         width: 95%;
     }
+
+    .accordion-content .button-container {
+        padding: 15px 0;
+    }
+
+    .section-image {
+        max-height: 150px;
+    }
 }
 </style>
 </head>
@@ -215,10 +237,12 @@ button:hover {
         <div class="accordion-header"> Lernspiele </div>
         <div class="accordion-content">
             <div class="button-container">
+                <img src="bilder/lernspiele.png" alt="Lernspiele" class="section-image">
                 <a href="vokabeltrainer.html"><button>Spaßiger Vokabeltrainer</button></a>
                 <p>Hier kannst du neue und alte Vokabeln und Aufgaben trainieren.</p>
             </div>
             <div class="button-container">
+                <img src="bilder/vokabelabfrage.png" alt="Vokabelabfrage" class="section-image">
                 <a href="Vokabelabfrage.html"><button>Pure Vokabelabfrage</button></a>
                 <p>Einfach nur ein Vokabel-Lernspiel mit Import/Export.</p>
             </div>
@@ -230,6 +254,7 @@ button:hover {
         <div class="accordion-header"> Python </div>
         <div class="accordion-content">
             <div class="button-container">
+                <img src="bilder/python.png" alt="Python" class="section-image">
                 <a href="grundlagenpython.html"><button>Python Grundlagen</button></a>
                 <p>(DEMO) Handbuch und Quizzes.</p>
             </div>
@@ -249,6 +274,7 @@ button:hover {
         <div class="accordion-header"> Naturspiele </div>
         <div class="accordion-content">
             <div class="button-container">
+                <img src="bilder/naturspiele.png" alt="Naturspiele" class="section-image">
                 <a href="Chronos1.2FungusUpdate.html"><button>CHRONOS V.1.2 Fungus Update</button></a>
                 <p>Baue ein Biotop. Trailer und Updates auf Youtube-Kanal: Ingwerknolle_03.</p>
             </div>
@@ -260,6 +286,7 @@ button:hover {
         <div class="accordion-header">Allgemeinwissen </div>
         <div class="accordion-content">
             <div class="button-container">
+                <img src="bilder/quiz.png" alt="Quiz" class="section-image">
                 <a href="dasgroßeQuiz.html"><button>Das große Quiz (Einzelspieler)</button></a>
                 <p>DEMO</p>
             </div>
@@ -306,6 +333,8 @@ button:hover {
 </script>
 
 </body>
+</html>
+
 </html>
 
 
