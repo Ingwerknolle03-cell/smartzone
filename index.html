@@ -115,13 +115,13 @@ button:hover { background:#0af; box-shadow:0 6px 15px rgba(10,255,255,0.5); }
 }
 .info-box-content.open {
     padding:15px 20px;
-    max-height:500px; /* genug Platz für Text + Button */
+    max-height:500px;
 }
 
 /* Footer */
 .footer-text { text-align:center; padding:40px 20px; font-size:16px; color:#888; }
 
-/* Info Button Panel */
+/* Info Panel */
 #info-panel {
     position:fixed;
     top:70px;
@@ -159,40 +159,12 @@ button:hover { background:#0af; box-shadow:0 6px 15px rgba(10,255,255,0.5); }
     </div>
 </header>
 
-<!-- Button, um das Info-Panel zu öffnen -->
-<button id="open-panel-btn">Info anzeigen</button>
-
 <!-- Info Panel -->
-<div id="info-panel" style="display: none; position: fixed; top: 20%; left: 50%; transform: translateX(-50%); background: #fff; padding: 20px; border: 1px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 100;">
+<div id="info-panel">
     <h3>Informationen</h3>
     <p>Übersicht öffnen?</p>
     <button onclick="location.href='info1.html'">weiter</button>
 </div>
-
-<script>
-const infoPanel = document.getElementById('info-panel');
-const openBtn = document.getElementById('open-panel-btn');
-
-// Panel öffnen, wenn Button geklickt wird
-openBtn.addEventListener('click', (event) => {
-    infoPanel.style.display = 'block';
-    event.stopPropagation(); // verhindert direktes Schließen
-});
-
-// Panel schließen, wenn irgendwo außerhalb geklickt wird
-document.addEventListener('click', (event) => {
-    if (infoPanel.style.display === 'block' && !infoPanel.contains(event.target)) {
-        infoPanel.style.display = 'none';
-    }
-});
-
-// Klick auf das Panel selbst darf nicht schließen
-infoPanel.addEventListener('click', (event) => {
-    event.stopPropagation();
-});
-</script>
-
-
 
 <!-- Main Content -->
 <div class="main-container">
@@ -230,7 +202,6 @@ infoPanel.addEventListener('click', (event) => {
                     <a href="fortgeschrittenesPython.html"><button>Fortgeschrittenes Python</button></a>
                     <p>Für Nutzer mit abgeschlossenen Grundlagen.</p>
                 </div>
-
                 <div class="button-container">
                     <a href="pythongame1.1.html"><button>GAME V. 1.1 VOLLVERSION</button></a>
                     <p>Für Nutzer mit abgeschlossenen Grundlagen.</p>
@@ -337,14 +308,28 @@ document.querySelectorAll('.info-box-header').forEach(header=>{
     });
 });
 
-// Info Panel Button
-document.getElementById('info-btn').addEventListener('click',()=>{
-    const panel = document.getElementById('info-panel');
-    panel.style.display = panel.style.display==='block'?'none':'block';
+// Info Panel Button Öffnen/Schließen + Klick außerhalb
+const infoBtn = document.getElementById('info-btn');
+const infoPanel = document.getElementById('info-panel');
+
+infoBtn.addEventListener('click', (event) => {
+    infoPanel.style.display = infoPanel.style.display==='block' ? 'none' : 'block';
+    event.stopPropagation();
+});
+
+document.addEventListener('click', (event) => {
+    if (infoPanel.style.display==='block' && !infoPanel.contains(event.target) && event.target !== infoBtn) {
+        infoPanel.style.display = 'none';
+    }
+});
+
+infoPanel.addEventListener('click', (event) => {
+    event.stopPropagation();
 });
 </script>
 
 </body>
 </html>
+
 
 
