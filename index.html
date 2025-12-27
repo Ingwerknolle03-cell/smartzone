@@ -91,8 +91,12 @@ button {
     color:white;
     cursor:pointer;
     transition:0.3s;
+    box-shadow:0 4px 10px rgba(106,17,203,0.4);
 }
-button:hover { background:#0af; }
+button:hover {
+    background:#0af;
+    box-shadow:0 6px 15px rgba(10,255,255,0.5);
+}
 
 /* Info Boxes */
 .info-box {
@@ -124,34 +128,39 @@ button:hover { background:#0af; }
     padding:20px;
 }
 
-/* 🔲 SmartZone Kachel (abgedunkelt, direkt klickbar) */
-.smartzone-tile {
-    background:linear-gradient(135deg,#2a2f55,#3a2b5c);
-    border-radius:16px;
-    padding:30px;
-    margin-bottom:25px;
-    cursor:pointer;
-    box-shadow:0 0 25px rgba(90,110,180,0.6);
-    transition:0.3s;
+/* 🔥 SmartZone Highlight */
+.info-box.smartzone-highlight {
+    background:linear-gradient(135deg,#2575fc,#6a11cb);
+    box-shadow:0 0 45px rgba(106,17,203,0.9);
+    animation:glow 3s infinite;
 }
-.smartzone-tile:hover {
-    transform:translateY(-6px);
-    box-shadow:0 0 35px rgba(120,150,255,0.8);
-}
-.smartzone-tile h3 {
-    margin:0 0 10px;
-    color:#fff;
+.smartzone-highlight .info-box-header {
+    background:rgba(0,0,0,0.25);
+    color:white;
     font-size:1.6em;
 }
-.smartzone-tile p {
-    color:#ddd;
-    font-size:1.05em;
+.smartzone-highlight .info-box-content {
+    color:white;
+    font-size:1.15em;
 }
-.smartzone-tile span {
-    display:inline-block;
-    margin-top:15px;
-    color:#8ab8ff;
-    font-weight:600;
+.smartzone-highlight button {
+    background:linear-gradient(90deg,#00c6ff,#0072ff);
+    border-radius:40px;
+    font-size:1.2em;
+    padding:15px 35px;
+    box-shadow:0 0 30px rgba(0,198,255,0.9);
+    animation:pulse 2s infinite;
+}
+
+@keyframes glow {
+    0% { box-shadow:0 0 25px rgba(106,17,203,0.6); }
+    50% { box-shadow:0 0 55px rgba(0,170,255,0.9); }
+    100% { box-shadow:0 0 25px rgba(106,17,203,0.6); }
+}
+@keyframes pulse {
+    0% { transform:scale(1); }
+    50% { transform:scale(1.08); }
+    100% { transform:scale(1); }
 }
 
 /* Info Panel */
@@ -200,22 +209,86 @@ button:hover { background:#0af; }
 
 <div class="main-container">
 
-<!-- LEFT COLUMN (UNVERÄNDERT) -->
+<!-- LEFT COLUMN – VOLLSTÄNDIG -->
 <div class="left-column">
-    <!-- … exakt wie bei dir, unverändert … -->
+
+    <!-- Lernspiele -->
+    <div class="accordion-item">
+        <div class="accordion-header">Lernspiele <span>▼</span></div>
+        <div class="accordion-content">
+            <div class="button-container">
+                <a href="vokabeltrainer.html"><button>Spaßiger Vokabeltrainer</button></a>
+                <p>Trainiere neue und alte Vokabeln.</p>
+            </div>
+            <div class="button-container">
+                <a href="Vokabelabfrage.html"><button>Pure Vokabelabfrage</button></a>
+                <p>Einfaches Lernspiel mit Import/Export.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Python -->
+    <div class="accordion-item">
+        <div class="accordion-header">Python <span>▼</span></div>
+        <div class="accordion-content">
+            <div class="button-container">
+                <a href="grundlagenpython.html"><button>Python Grundlagen</button></a>
+                <p>(DEMO) Handbuch & Quizzes.</p>
+            </div>
+            <div class="button-container">
+                <a href="fortgeschrittenesPython.html"><button>Fortgeschrittenes Python</button></a>
+                <p>Für Nutzer mit abgeschlossenen Grundlagen.</p>
+            </div>
+            <div class="button-container">
+                <a href="pythongame1.1.html"><button>GAME V.1.1 VOLLVERSION</button></a>
+                <p>Für Nutzer mit abgeschlossenen Grundlagen.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Naturspiele -->
+    <div class="accordion-item">
+        <div class="accordion-header">Naturspiele <span>▼</span></div>
+        <div class="accordion-content">
+            <div class="button-container">
+                <a href="Chronos1.2FungusUpdate.html"><button>CHRONOS V.1.2 Fungus Update</button></a>
+                <p>Baue ein Biotop. Updates pausiert.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Allgemeinwissen -->
+    <div class="accordion-item">
+        <div class="accordion-header">Allgemeinwissen <span>▼</span></div>
+        <div class="accordion-content">
+            <div class="button-container">
+                <a href="dasgroßeQuiz.html"><button>Das große Quiz</button></a>
+                <p>DEMO Version</p>
+            </div>
+            <div class="button-container">
+                <a href="mehrspielerQuiz.html"><button>Mehrspieler Quiz</button></a>
+                <p>VOLLVERSION FREE</p>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <!-- RIGHT COLUMN -->
 <div class="right-column">
 
-    <!-- 🔲 Highlight Kachel -->
-    <div class="smartzone-tile" onclick="location.href='infosphäre.html'">
-        <h3>🚀 SmartZone</h3>
-        <p>Ein neues Internet.<br>Interaktive Inhalte & Experimente.</p>
-        <span>Jetzt entdecken →</span>
+    <!-- 🔥 Highlight -->
+    <div class="info-box smartzone-highlight">
+        <div class="info-box-header">
+            <span>SmartZone</span><span>▼</span>
+        </div>
+        <div class="info-box-content">
+            <p><strong>Ein neues Internet.</strong><br>Interaktive Inhalte & Experimente.</p>
+            <button onclick="location.href='infosphäre.html'">Jetzt eintauchen</button>
+        </div>
     </div>
 
-    <!-- 📦 Normale SmartZone Info-Box -->
+    <!-- Normal -->
     <div class="info-box">
         <div class="info-box-header">
             <span>SmartZone</span><span>▼</span>
@@ -274,8 +347,6 @@ document.addEventListener('click',e=>{
 
 </body>
 </html>
-
-
 
 
 
