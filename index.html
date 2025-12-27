@@ -159,28 +159,39 @@ button:hover { background:#0af; box-shadow:0 6px 15px rgba(10,255,255,0.5); }
     </div>
 </header>
 
+<!-- Button, um das Info-Panel zu öffnen -->
+<button id="open-panel-btn">Info anzeigen</button>
+
 <!-- Info Panel -->
-<div id="info-panel" style="position: fixed; top: 20%; left: 50%; transform: translateX(-50%); background: #fff; padding: 20px; border: 1px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 100;">
+<div id="info-panel" style="display: none; position: fixed; top: 20%; left: 50%; transform: translateX(-50%); background: #fff; padding: 20px; border: 1px solid #333; box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 100;">
     <h3>Informationen</h3>
     <p>Übersicht öffnen?</p>
     <button onclick="location.href='info1.html'">weiter</button>
 </div>
 
 <script>
-    const infoPanel = document.getElementById('info-panel');
+const infoPanel = document.getElementById('info-panel');
+const openBtn = document.getElementById('open-panel-btn');
 
-    // Funktion, die das Panel schließt, wenn außerhalb geklickt wird
-    document.addEventListener('click', function(event) {
-        if (!infoPanel.contains(event.target)) {
-            infoPanel.style.display = 'none';
-        }
-    });
+// Panel öffnen, wenn Button geklickt wird
+openBtn.addEventListener('click', (event) => {
+    infoPanel.style.display = 'block';
+    event.stopPropagation(); // verhindert direktes Schließen
+});
 
-    // Optional: verhindern, dass Klick auf Panel das Schließen auslöst
-    infoPanel.addEventListener('click', function(event) {
-        event.stopPropagation();
-    });
+// Panel schließen, wenn irgendwo außerhalb geklickt wird
+document.addEventListener('click', (event) => {
+    if (infoPanel.style.display === 'block' && !infoPanel.contains(event.target)) {
+        infoPanel.style.display = 'none';
+    }
+});
+
+// Klick auf das Panel selbst darf nicht schließen
+infoPanel.addEventListener('click', (event) => {
+    event.stopPropagation();
+});
 </script>
+
 
 
 <!-- Main Content -->
