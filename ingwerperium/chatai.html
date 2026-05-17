@@ -182,7 +182,7 @@ function render() {
         let text = m.text;
 
         if (m.role === "bot") {
-            text = linkifyLastOnly(text);
+            text = linkify(text);
         }
 
         c.innerHTML += `<div class="msg ${m.role}">${text}</div>`;
