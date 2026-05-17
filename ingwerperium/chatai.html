@@ -7,7 +7,7 @@
 <style>
 body {
     font-family: monospace;
-    background: #cfcfcf; /* grauer */
+    background: #cfcfcf;
     margin: 0;
 }
 
@@ -18,14 +18,24 @@ body {
     border-bottom: 2px solid #888;
 }
 
+/* gemeinsame Nachricht */
 .msg {
     margin: 6px 0;
     white-space: pre-wrap;
     line-height: 1.4;
-    color: #222;
 }
 
-/* dezenter als vorher */
+/* USER → grau */
+.user {
+    color: #6b6b6b;
+}
+
+/* BOT → leicht dunkler / grünlich */
+.bot {
+    color: #1f4d3a;
+}
+
+/* klickbare Begriffe */
 .term {
     color: #1f4e79;
     background: #d7d7d7;
@@ -65,7 +75,7 @@ const knowledge = {
     photosynthese: "CO2 + Wasser + Licht → Glucose + Sauerstoff.",
     chlorophyll: "Chlorophyll ist der grüne Farbstoff der Pflanzen.",
     boden: "Boden besteht aus Mineralien, Humus, Wasser und Luft.",
-    ökosystem: "Ein Ökosystem besteht aus allen Lebewesen und ihrer Umwelt.",
+    ökosystem: "Ein Ökosystem besteht aus Lebewesen und ihrer Umwelt.",
     mykorrhiza: "Symbiose zwischen Pilzen und Pflanzenwurzeln.",
     wald: "Ein Wald ist ein komplexes Ökosystem."
 };
@@ -93,40 +103,32 @@ function isEnglish(text) {
     return enScore >= deScore;
 }
 
-/* ------------------ NUR LETZTES HIGHLIGHT ------------------ */
+/* ------------------ LINKIFY ------------------ */
 
 function linkifyLastOnly(text) {
-    let result = text;
-
     for (let key in knowledge) {
         const regex = new RegExp(`\\b${key}\\b`, "gi");
 
-        let matches = [...result.matchAll(regex)];
+        let matches = [...text.matchAll(regex)];
         if (matches.length > 1) {
-            // alle ersetzen außer letztes Vorkommen entfernen Markierung
-            let lastIndex = matches[matches.length - 1].index;
-
             let i = 0;
-            result = result.replace(regex, match => {
-                let current = i;
-                i++;
-
-                if (current === matches.length - 1) {
+            text = text.replace(regex, match => {
+                let index = i++;
+                if (index === matches.length - 1) {
                     return `<span class="term" onclick="showInfo('${key}')">${match}</span>`;
                 }
                 return match;
             });
         } else {
-            result = result.replace(regex, match =>
-                `<span class="term" onclick="showInfo('${key}')">${match}</span>`
+            text = text.replace(regex,
+                match => `<span class="term" onclick="showInfo('${key}')">${match}</span>`
             );
         }
     }
-
-    return result;
+    return text;
 }
 
-/* ------------------ CLICK INFO ------------------ */
+/* ------------------ INFO CLICK ------------------ */
 
 function showInfo(key) {
     chat.push({role:"bot", text:"→ " + knowledge[key]});
@@ -134,7 +136,7 @@ function showInfo(key) {
     render();
 }
 
-/* ------------------ BOT LOGIK ------------------ */
+/* ------------------ BOT ------------------ */
 
 function reply(input) {
     const text = input.toLowerCase();
@@ -180,7 +182,7 @@ function render() {
             text = linkifyLastOnly(text);
         }
 
-        c.innerHTML += `<div class="msg">${text}</div>`;
+        c.innerHTML += `<div class="msg ${m.role}">${text}</div>`;
     }
 
     c.scrollTop = c.scrollHeight;
