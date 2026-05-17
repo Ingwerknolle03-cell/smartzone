@@ -7,7 +7,7 @@
 <style>
 body {
     font-family: monospace;
-    background: #dcdcdc;
+    background: #cfcfcf; /* grauer */
     margin: 0;
 }
 
@@ -15,25 +15,27 @@ body {
     height: 92vh;
     overflow-y: auto;
     padding: 10px;
-    border-bottom: 2px solid #999;
+    border-bottom: 2px solid #888;
 }
 
 .msg {
     margin: 6px 0;
     white-space: pre-wrap;
     line-height: 1.4;
+    color: #222;
 }
 
-/* klickbare Begriffe */
+/* dezenter als vorher */
 .term {
-    color: darkblue;
-    background: #cfe6ff;
+    color: #1f4e79;
+    background: #d7d7d7;
     padding: 1px 4px;
     border-radius: 4px;
     cursor: pointer;
 }
+
 .term:hover {
-    background: #a9d2ff;
+    background: #bfbfbf;
 }
 
 #input {
@@ -41,9 +43,9 @@ body {
     padding: 12px;
     font-family: monospace;
     border: none;
-    border-top: 2px solid #999;
+    border-top: 2px solid #888;
     outline: none;
-    background: #f0f0f0;
+    background: #e6e6e6;
 }
 </style>
 </head>
@@ -59,17 +61,16 @@ let chat = JSON.parse(localStorage.getItem("chat") || "[]");
 /* ------------------ WISSEN ------------------ */
 
 const knowledge = {
-    pflanze: "Pflanzen sind autotrophe Lebewesen. Sie betreiben Photosynthese und erzeugen Energie aus Licht.",
-    photosynthese: "Photosynthese: CO2 + Wasser + Licht → Glucose + Sauerstoff.",
+    pflanze: "Pflanzen sind autotrophe Lebewesen. Sie betreiben Photosynthese.",
+    photosynthese: "CO2 + Wasser + Licht → Glucose + Sauerstoff.",
     chlorophyll: "Chlorophyll ist der grüne Farbstoff der Pflanzen.",
     boden: "Boden besteht aus Mineralien, Humus, Wasser und Luft.",
-    ökosystem: "Ein Ökosystem besteht aus Pflanzen, Tieren, Pilzen und Mikroorganismen.",
-    mykorrhiza: "Mykorrhiza ist eine Symbiose zwischen Pilzen und Pflanzenwurzeln.",
-    wald: "Ein Wald ist ein komplexes Ökosystem mit vielen Arten und Beziehungen.",
-    pflanzenkrankheit: "Pflanzenkrankheiten entstehen durch Pilze, Bakterien oder Schädlinge."
+    ökosystem: "Ein Ökosystem besteht aus allen Lebewesen und ihrer Umwelt.",
+    mykorrhiza: "Symbiose zwischen Pilzen und Pflanzenwurzeln.",
+    wald: "Ein Wald ist ein komplexes Ökosystem."
 };
 
-/* ------------------ WALDPFLANZEN ------------------ */
+/* ------------------ LISTEN ------------------ */
 
 const forestPlants = [
 "Buche","Eiche","Ahorn","Fichte","Tanne",
@@ -77,25 +78,6 @@ const forestPlants = [
 "Hasel","Eberesche","Weide","Linde","Hainbuche",
 "Holunder","Schlehe","Himbeere","Brombeere","Moos","Farn"
 ];
-
-/* ------------------ PILZE ------------------ */
-
-const mushrooms = {
-    fliegenpilz: "Fliegenpilz: giftig, roter Hut mit weißen Punkten.",
-    steinpilz: "Steinpilz: essbar, sehr beliebter Waldpilz.",
-    champignon: "Champignon: essbarer Wiesenpilz."
-};
-
-/* ------------------ IT WISSEN ------------------ */
-
-const it = {
-    python: "Python ist eine Programmiersprache für KI, Daten und Automatisierung.",
-    linux: "Linux ist ein Betriebssystem. Wichtige Befehle: ls, cd, mkdir, rm.",
-    network: "Netzwerke bestehen aus IP, Router und DNS.",
-    ls: "ls zeigt Dateien im Ordner.",
-    cd: "cd wechselt den Ordner.",
-    rm: "rm löscht Dateien."
-};
 
 /* ------------------ SPRACHE ------------------ */
 
@@ -111,29 +93,48 @@ function isEnglish(text) {
     return enScore >= deScore;
 }
 
-/* ------------------ LINKIFY (nur Klick) ------------------ */
+/* ------------------ NUR LETZTES HIGHLIGHT ------------------ */
 
-function linkify(text) {
-    for (let k in knowledge) {
-        const regex = new RegExp(`\\b${k}\\b`, "gi");
+function linkifyLastOnly(text) {
+    let result = text;
 
-        text = text.replace(regex, match => {
-            return `<span class="term" onclick="showInfo('${k}')">${match}</span>`;
-        });
+    for (let key in knowledge) {
+        const regex = new RegExp(`\\b${key}\\b`, "gi");
+
+        let matches = [...result.matchAll(regex)];
+        if (matches.length > 1) {
+            // alle ersetzen außer letztes Vorkommen entfernen Markierung
+            let lastIndex = matches[matches.length - 1].index;
+
+            let i = 0;
+            result = result.replace(regex, match => {
+                let current = i;
+                i++;
+
+                if (current === matches.length - 1) {
+                    return `<span class="term" onclick="showInfo('${key}')">${match}</span>`;
+                }
+                return match;
+            });
+        } else {
+            result = result.replace(regex, match =>
+                `<span class="term" onclick="showInfo('${key}')">${match}</span>`
+            );
+        }
     }
-    return text;
+
+    return result;
 }
 
-function showInfo(key) {
-    let text = knowledge[key];
-    if (!text) return;
+/* ------------------ CLICK INFO ------------------ */
 
-    chat.push({role:"bot", text:"→ " + text});
+function showInfo(key) {
+    chat.push({role:"bot", text:"→ " + knowledge[key]});
     save();
     render();
 }
 
-/* ------------------ LOGIK ------------------ */
+/* ------------------ BOT LOGIK ------------------ */
 
 function reply(input) {
     const text = input.toLowerCase();
@@ -141,13 +142,9 @@ function reply(input) {
 
     if (text.includes("hallo") || text.includes("hi") || text.includes("hello")) {
         return en
-            ? "I am your forest and plant knowledge assistant."
-            : "Ich bin dein Wald- und Pflanzen-Wissensassistent.";
+            ? "I am your forest and plant assistant."
+            : "Ich bin dein Wald- und Pflanzenassistent.";
     }
-
-    if (text === "ls") return it.ls;
-    if (text === "cd") return it.cd;
-    if (text === "rm") return it.rm;
 
     if (text.includes("pflanze") || text.includes("plant")) return knowledge.pflanze;
     if (text.includes("photosynthese") || text.includes("photosynthesis")) return knowledge.photosynthese;
@@ -161,16 +158,8 @@ function reply(input) {
             : "Waldpflanzen: " + forestPlants.join(", ");
     }
 
-    for (let m in mushrooms) {
-        if (text.includes(m)) return mushrooms[m];
-    }
-
-    for (let k in it) {
-        if (text.includes(k)) return it[k];
-    }
-
     return en
-        ? "No knowledge found. Try plants, forest, mushrooms or IT."
+        ? "No knowledge available for this topic."
         : "Dazu habe ich kein Wissen hinterlegt.";
 }
 
@@ -188,7 +177,7 @@ function render() {
         let text = m.text;
 
         if (m.role === "bot") {
-            text = linkify(text);
+            text = linkifyLastOnly(text);
         }
 
         c.innerHTML += `<div class="msg">${text}</div>`;
@@ -206,8 +195,6 @@ function send(text) {
     save();
     render();
 }
-
-/* ------------------ INPUT ------------------ */
 
 document.getElementById("input").addEventListener("keydown", e => {
     if (e.key === "Enter") {
