@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Forest & Plant Knowledge Bot</title>
+<title>Wald & Wissenssystem</title>
 
 <style>
 body {
@@ -21,10 +21,20 @@ body {
 .msg {
     margin: 6px 0;
     white-space: pre-wrap;
+    line-height: 1.4;
 }
 
-.user { color: navy; }
-.bot { color: darkgreen; }
+/* klickbare Begriffe */
+.term {
+    color: darkblue;
+    background: #cfe6ff;
+    padding: 1px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.term:hover {
+    background: #a9d2ff;
+}
 
 #input {
     width: 100%;
@@ -46,6 +56,144 @@ body {
 <script>
 let chat = JSON.parse(localStorage.getItem("chat") || "[]");
 
+/* ------------------ WISSEN ------------------ */
+
+const knowledge = {
+    pflanze: "Pflanzen sind autotrophe Lebewesen. Sie betreiben Photosynthese und erzeugen Energie aus Licht.",
+    photosynthese: "Photosynthese: CO2 + Wasser + Licht → Glucose + Sauerstoff.",
+    chlorophyll: "Chlorophyll ist der grüne Farbstoff der Pflanzen.",
+    boden: "Boden besteht aus Mineralien, Humus, Wasser und Luft.",
+    ökosystem: "Ein Ökosystem besteht aus Pflanzen, Tieren, Pilzen und Mikroorganismen.",
+    mykorrhiza: "Mykorrhiza ist eine Symbiose zwischen Pilzen und Pflanzenwurzeln.",
+    wald: "Ein Wald ist ein komplexes Ökosystem mit vielen Arten und Beziehungen.",
+    pflanzenkrankheit: "Pflanzenkrankheiten entstehen durch Pilze, Bakterien oder Schädlinge."
+};
+
+/* ------------------ WALDPFLANZEN ------------------ */
+
+const forestPlants = [
+"Buche","Eiche","Ahorn","Fichte","Tanne",
+"Kiefer","Birke","Esche","Ulme","Lärche",
+"Hasel","Eberesche","Weide","Linde","Hainbuche",
+"Holunder","Schlehe","Himbeere","Brombeere","Moos","Farn"
+];
+
+/* ------------------ PILZE ------------------ */
+
+const mushrooms = {
+    fliegenpilz: "Fliegenpilz: giftig, roter Hut mit weißen Punkten.",
+    steinpilz: "Steinpilz: essbar, sehr beliebter Waldpilz.",
+    champignon: "Champignon: essbarer Wiesenpilz."
+};
+
+/* ------------------ IT WISSEN ------------------ */
+
+const it = {
+    python: "Python ist eine Programmiersprache für KI, Daten und Automatisierung.",
+    linux: "Linux ist ein Betriebssystem. Wichtige Befehle: ls, cd, mkdir, rm.",
+    network: "Netzwerke bestehen aus IP, Router und DNS.",
+    ls: "ls zeigt Dateien im Ordner.",
+    cd: "cd wechselt den Ordner.",
+    rm: "rm löscht Dateien."
+};
+
+/* ------------------ SPRACHE ------------------ */
+
+function isEnglish(text) {
+    const t = text.toLowerCase();
+
+    const en = ["the","plant","forest","mushroom","what","how","is","are","soil","tree"];
+    const de = ["der","die","das","pflanze","wald","pilz","was","wie","boden","baum"];
+
+    let enScore = en.filter(w => t.includes(w)).length;
+    let deScore = de.filter(w => t.includes(w)).length;
+
+    return enScore >= deScore;
+}
+
+/* ------------------ LINKIFY ------------------ */
+
+function linkify(text) {
+    for (let k in knowledge) {
+        const regex = new RegExp(`\\b${k}\\b`, "gi");
+
+        text = text.replace(regex, match => {
+            return `<span class="term" onclick="showInfo('${k}')">${match}</span>`;
+        });
+    }
+    return text;
+}
+
+function showInfo(key) {
+    let text = knowledge[key];
+    if (!text) return;
+
+    chat.push({role:"bot", text:"🔎 " + text});
+    save();
+    render();
+}
+
+/* ------------------ LOGIK ------------------ */
+
+function reply(input) {
+    const text = input.toLowerCase();
+    const en = isEnglish(input);
+
+    /* SMALLTALK */
+    if (text.includes("hallo") || text.includes("hi") || text.includes("hello")) {
+        return en
+            ? "I am your forest and plant knowledge assistant."
+            : "Ich bin dein Wald- und Pflanzen-Wissensassistent.";
+    }
+
+    /* EXAKTE IT BEFEHLE */
+    if (text === "ls") return it.ls;
+    if (text === "cd") return it.cd;
+    if (text === "rm") return it.rm;
+
+    /* PFLANZEN THEMA */
+    if (text.includes("pflanze") || text.includes("plant")) {
+        return knowledge.pflanze;
+    }
+
+    if (text.includes("photosynthese") || text.includes("photosynthesis")) {
+        return knowledge.photosynthese;
+    }
+
+    if (text.includes("wald") || text.includes("forest")) {
+        return knowledge.wald;
+    }
+
+    if (text.includes("ökosystem") || text.includes("ecosystem")) {
+        return knowledge.ökosystem;
+    }
+
+    if (text.includes("mykorrhiza")) {
+        return knowledge.mykorrhiza;
+    }
+
+    /* WALDPFLANZEN LISTE */
+    if (text.includes("waldpflanzen") || text.includes("forest plants")) {
+        return "Waldpflanzen: " + forestPlants.join(", ");
+    }
+
+    /* PILZE */
+    for (let m in mushrooms) {
+        if (text.includes(m)) return mushrooms[m];
+    }
+
+    /* IT */
+    for (let k in it) {
+        if (text.includes(k)) return it[k];
+    }
+
+    return en
+        ? "No specific knowledge found. Try plants, forest, mushrooms or IT topics."
+        : "Dazu habe ich kein spezifisches Wissen hinterlegt.";
+}
+
+/* ------------------ CHAT ------------------ */
+
 function save() {
     localStorage.setItem("chat", JSON.stringify(chat));
 }
@@ -55,161 +203,34 @@ function render() {
     c.innerHTML = "";
 
     for (let m of chat) {
-        c.innerHTML += `<div class="msg ${m.role}">${m.text}</div>`;
+        let text = m.text;
+
+        if (m.role === "bot") {
+            text = linkify(text);
+        }
+
+        c.innerHTML += `<div class="msg">${text}</div>`;
     }
 
     c.scrollTop = c.scrollHeight;
 }
 
-/* ------------------- SPRACHERKENNUNG ------------------- */
-
-function isEnglish(text) {
-    const t = text.toLowerCase();
-
-    const enWords = ["the", "plant", "tree", "forest", "mushroom", "what", "how", "why", "is", "are", "soil"];
-    const deWords = ["der", "die", "das", "pflanze", "baum", "wald", "pilz", "was", "wie", "warum", "boden"];
-
-    let en = enWords.filter(w => t.includes(w)).length;
-    let de = deWords.filter(w => t.includes(w)).length;
-
-    return en >= de;
-}
-
-/* ------------------- WISSEN ------------------- */
-
-const plants = {
-    general: {
-        de: "Pflanzen sind autotrophe Organismen. Sie betreiben Photosynthese und erzeugen Energie aus Licht.",
-        en: "Plants are autotrophic organisms. They perform photosynthesis and produce energy from light."
-    },
-    photosynthesis: {
-        de: "Photosynthese: CO2 + Wasser + Licht → Zucker + Sauerstoff.",
-        en: "Photosynthesis: CO2 + water + light → glucose + oxygen."
-    },
-    soil: {
-        de: "Boden besteht aus Mineralien, Humus, Wasser und Luft.",
-        en: "Soil consists of minerals, humus, water and air."
-    },
-    ecosystem: {
-        de: "Ein Ökosystem besteht aus Pflanzen, Tieren, Pilzen und Mikroorganismen.",
-        en: "An ecosystem consists of plants, animals, fungi and microorganisms."
-    }
-};
-
-/* ------------------- WALDPFLANZEN (ERWEITERT) ------------------- */
-
-const forestPlants = [
-"Buche", "Eiche", "Ahorn", "Fichte", "Tanne",
-"Kiefer", "Birke", "Hasel", "Eberesche", "Weide",
-"Esche", "Ulme", "Lärche", "Hainbuche", "Holunder",
-"Schlehe", "Himbeere", "Brombeere", "Moos", "Farn",
-"Linde", "Rotbuche", "Douglasie", "Wacholder"
-];
-
-/* ------------------- PILZE ------------------- */
-
-const mushrooms = {
-    fliegenpilz: {
-        de: "Fliegenpilz: giftig, roter Hut mit weißen Punkten.",
-        en: "Fly agaric: poisonous mushroom with red cap and white spots."
-    },
-    steinpilz: {
-        de: "Steinpilz: essbar, wächst unter Bäumen.",
-        en: "Porcini mushroom: edible, grows under trees."
-    },
-    champignon: {
-        de: "Champignon: essbarer Wiesenpilz.",
-        en: "Button mushroom: edible meadow mushroom."
-    }
-};
-
-/* ------------------- EXTRA WISSEN ------------------- */
-
-const extra = {
-    licht: {
-        de: "Licht ist die Energiequelle der Photosynthese.",
-        en: "Light is the energy source for photosynthesis."
-    },
-    wurzel: {
-        de: "Wurzeln nehmen Wasser und Nährstoffe auf.",
-        en: "Roots absorb water and nutrients."
-    },
-    chlorophyll: {
-        de: "Chlorophyll ist der grüne Farbstoff der Pflanzen.",
-        en: "Chlorophyll is the green pigment in plants."
-    },
-    mykorrhiza: {
-        de: "Symbiose zwischen Pilzen und Pflanzenwurzeln.",
-        en: "Symbiosis between fungi and plant roots."
-    },
-    wald: {
-        de: "Ein Wald ist ein komplexes Ökosystem.",
-        en: "A forest is a complex ecosystem."
-    },
-    baum: {
-        de: "Ein Baum ist eine große Holzpflanze mit Stamm.",
-        en: "A tree is a large woody plant with a trunk."
-    }
-};
-
-/* ------------------- LOGIK ------------------- */
-
-function findAnswer(text) {
-    const t = text.toLowerCase();
-    const en = isEnglish(text);
-
-    // Pflanzen allgemein
-    for (let k in plants) {
-        if (t.includes(k)) return plants[k][en ? "en" : "de"];
-    }
-
-    // Waldpflanzen
-    for (let p of forestPlants) {
-        if (t.includes(p.toLowerCase())) {
-            return en
-                ? `${p} is a common forest plant in Central Europe.`
-                : `${p} ist eine typische Waldpflanze in Mitteleuropa.`;
-        }
-    }
-
-    // Pilze
-    for (let m in mushrooms) {
-        if (t.includes(m)) return mushrooms[m][en ? "en" : "de"];
-    }
-
-    // Extra Wissen
-    for (let k in extra) {
-        if (t.includes(k)) return extra[k][en ? "en" : "de"];
-    }
-
-    // Listen
-    if (t.includes("waldpflanzen") || t.includes("forest plants")) {
-        return en
-            ? "Forest plants: " + forestPlants.join(", ")
-            : "Waldpflanzen: " + forestPlants.join(", ");
-    }
-
-    return en
-        ? "I don't have specific knowledge about this yet. Try plants, forest, mushrooms or ecology."
-        : "Dazu habe ich kein spezifisches Wissen. Frag nach Pflanzen, Wald, Pilzen oder Ökologie.";
-}
-
-/* ------------------- CHAT ------------------- */
-
 function send(text) {
     if (!text) return;
 
     chat.push({role:"user", text});
-    chat.push({role:"bot", text: findAnswer(text)});
+    chat.push({role:"bot", text: reply(text)});
 
     save();
     render();
 }
 
-document.getElementById("input").addEventListener("keydown", function(e) {
+/* ------------------ INPUT ------------------ */
+
+document.getElementById("input").addEventListener("keydown", e => {
     if (e.key === "Enter") {
-        send(this.value);
-        this.value = "";
+        send(e.target.value);
+        e.target.value = "";
     }
 });
 
