@@ -102,8 +102,8 @@ const it = {
 function isEnglish(text) {
     const t = text.toLowerCase();
 
-    const en = ["the","plant","forest","mushroom","what","how","is","are","soil","tree"];
-    const de = ["der","die","das","pflanze","wald","pilz","was","wie","boden","baum"];
+    const en = ["the","plant","forest","mushroom","what","how","is","are","soil","tree","ecosystem","photosynthesis"];
+    const de = ["der","die","das","pflanze","wald","pilz","was","wie","boden","baum","ökosystem","photosynthese"];
 
     let enScore = en.filter(w => t.includes(w)).length;
     let deScore = de.filter(w => t.includes(w)).length;
@@ -111,7 +111,7 @@ function isEnglish(text) {
     return enScore >= deScore;
 }
 
-/* ------------------ LINKIFY ------------------ */
+/* ------------------ LINKIFY (nur Klick) ------------------ */
 
 function linkify(text) {
     for (let k in knowledge) {
@@ -128,7 +128,7 @@ function showInfo(key) {
     let text = knowledge[key];
     if (!text) return;
 
-    chat.push({role:"bot", text:"🔎 " + text});
+    chat.push({role:"bot", text:"→ " + text});
     save();
     render();
 }
@@ -139,57 +139,39 @@ function reply(input) {
     const text = input.toLowerCase();
     const en = isEnglish(input);
 
-    /* SMALLTALK */
     if (text.includes("hallo") || text.includes("hi") || text.includes("hello")) {
         return en
             ? "I am your forest and plant knowledge assistant."
             : "Ich bin dein Wald- und Pflanzen-Wissensassistent.";
     }
 
-    /* EXAKTE IT BEFEHLE */
     if (text === "ls") return it.ls;
     if (text === "cd") return it.cd;
     if (text === "rm") return it.rm;
 
-    /* PFLANZEN THEMA */
-    if (text.includes("pflanze") || text.includes("plant")) {
-        return knowledge.pflanze;
-    }
+    if (text.includes("pflanze") || text.includes("plant")) return knowledge.pflanze;
+    if (text.includes("photosynthese") || text.includes("photosynthesis")) return knowledge.photosynthese;
+    if (text.includes("wald") || text.includes("forest")) return knowledge.wald;
+    if (text.includes("ökosystem") || text.includes("ecosystem")) return knowledge.ökosystem;
+    if (text.includes("mykorrhiza")) return knowledge.mykorrhiza;
 
-    if (text.includes("photosynthese") || text.includes("photosynthesis")) {
-        return knowledge.photosynthese;
-    }
-
-    if (text.includes("wald") || text.includes("forest")) {
-        return knowledge.wald;
-    }
-
-    if (text.includes("ökosystem") || text.includes("ecosystem")) {
-        return knowledge.ökosystem;
-    }
-
-    if (text.includes("mykorrhiza")) {
-        return knowledge.mykorrhiza;
-    }
-
-    /* WALDPFLANZEN LISTE */
     if (text.includes("waldpflanzen") || text.includes("forest plants")) {
-        return "Waldpflanzen: " + forestPlants.join(", ");
+        return en
+            ? "Forest plants: " + forestPlants.join(", ")
+            : "Waldpflanzen: " + forestPlants.join(", ");
     }
 
-    /* PILZE */
     for (let m in mushrooms) {
         if (text.includes(m)) return mushrooms[m];
     }
 
-    /* IT */
     for (let k in it) {
         if (text.includes(k)) return it[k];
     }
 
     return en
-        ? "No specific knowledge found. Try plants, forest, mushrooms or IT topics."
-        : "Dazu habe ich kein spezifisches Wissen hinterlegt.";
+        ? "No knowledge found. Try plants, forest, mushrooms or IT."
+        : "Dazu habe ich kein Wissen hinterlegt.";
 }
 
 /* ------------------ CHAT ------------------ */
