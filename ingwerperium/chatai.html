@@ -2,6 +2,108 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+<title>Chat</title>
+
+<style>
+body {
+    font-family: monospace;
+    background: #d0d0d0;
+    margin: 0;
+}
+
+#chat {
+    height: 92vh;
+    overflow-y: auto;
+    padding: 10px;
+    border-bottom: 2px solid #888;
+}
+
+.msg {
+    margin: 5px 0;
+    white-space: pre-wrap;
+}
+
+.user { color: navy; }
+.bot { color: darkgreen; }
+
+#input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    font-family: monospace;
+    background: #eee;
+    outline: none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="chat"></div>
+<input id="input" placeholder="Frage eingeben und Enter drücken...">
+
+<script>
+let chat = JSON.parse(localStorage.getItem("chat") || "[]");
+
+/* -----------------------------
+   1. PLUGINS = WISSENSDATENBANK
+------------------------------ */
+
+const PLUGINS = [
+    {
+        name: "plants",
+        keywords: ["pflanze", "pflanzen", "plant", "plants", "botanik"],
+        de: "Pflanzen sind autotrophe Lebewesen. Sie betreiben Photosynthese (CO2 + Wasser + Licht → Zucker + Sauerstoff). Wichtige Faktoren: Licht, Wasser, Nährstoffe (NPK), Temperatur.",
+        en: "Plants are autotrophic organisms. They perform photosynthesis (CO2 + water + light → glucose + oxygen). Key factors: light, water, nutrients (NPK), temperature."
+    },
+    {
+        name: "photosynthesis",
+        keywords: ["photosynthese", "photosynthesis"],
+        de: "Photosynthese ist der Prozess, bei dem Pflanzen Lichtenergie in chemische Energie umwandeln.",
+        en: "Photosynthesis is the process where plants convert light energy into chemical energy."
+    },
+    {
+        name: "python",
+        keywords: ["python"],
+        de: "Python ist eine Programmiersprache. Beispiel: print('Hallo Welt').",
+        en: "Python is a programming language. Example: print('Hello world')."
+    },
+    {
+        name: "linux",
+        keywords: ["linux"],
+        de: "Linux ist ein Betriebssystem. Wichtige Befehle: ls, cd, mkdir, rm.",
+        en: "Linux is an operating system. Important commands: ls, cd, mkdir, rm."
+    },
+    {
+        name: "network",
+        keywords: ["netzwerk", "network"],
+        de: "Netzwerke bestehen aus IP-Adressen, Routern und DNS-Systemen.",
+        en: "Networks consist of IP addresses, routers and DNS systems."
+    }
+];
+
+/* -----------------------------
+   2. SPRACHERKENNUNG
+------------------------------ */
+
+function isEnglish(text) {
+    const t = text.toLowerCase();
+
+    const englishSignals = [
+        "the", "is", "are", "what", "how", "why",
+        "plant", "python", "linux", "network"
+    ];
+
+    const germanSignals = [
+        "der", "die", "das", "was", "wie", "warum",
+        "pflanze", "pflanzen", "netzwerk"
+    ];
+
+    let en = englishSignals.filter(w => t.includes(w)).length;
+    let de = germanSignals.filter(<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
 <title>Offline Wissens-Chat</title>
 
 <style>
@@ -150,6 +252,78 @@ function send(text) {
 
     chat.push({role:"user", text});
     chat.push({role:"bot", text: answer});
+
+    save();
+    render();
+}
+
+/* -----------------------------
+   5. INPUT (ENTER ONLY)
+------------------------------ */
+
+document.getElementById("input").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        send(this.value);
+        this.value = "";
+    }
+});
+
+render();
+</script>
+
+</body>
+</html>
+</body>
+</html>w => t.includes(w)).length;
+
+    return en > de;
+}
+
+/* -----------------------------
+   3. WISSENSSUCHE (PLUGIN SYSTEM)
+------------------------------ */
+
+function findAnswer(text, lang) {
+    const t = text.toLowerCase();
+
+    for (let p of PLUGINS) {
+        for (let k of p.keywords) {
+            if (t.includes(k)) {
+                return lang ? p.en : p.de;
+            }
+        }
+    }
+
+    return lang
+        ? "I don't have knowledge about this yet. Try plants, Python, Linux or networks."
+        : "Dazu habe ich noch kein Wissen. Frag nach Pflanzen, Python, Linux oder Netzwerken.";
+}
+
+/* -----------------------------
+   4. CHAT LOGIK
+------------------------------ */
+
+function save() {
+    localStorage.setItem("chat", JSON.stringify(chat));
+}
+
+function render() {
+    const c = document.getElementById("chat");
+    c.innerHTML = "";
+    for (let m of chat) {
+        c.innerHTML += `<div class="msg ${m.role}"><b>${m.role}:</b> ${m.text}</div>`;
+    }
+    c.scrollTop = c.scrollHeight;
+}
+
+function send(text) {
+    if (!text) return;
+
+    const lang = isEnglish(text);
+    const answer = findAnswer(text, lang);
+
+    chat.push({role:"", text});
+    chat.push({role:"", text: answer});
 
     save();
     render();
