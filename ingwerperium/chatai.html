@@ -53,9 +53,11 @@ function save() {
 function render() {
     const c = document.getElementById("chat");
     c.innerHTML = "";
+
     for (let m of chat) {
-        c.innerHTML += `<div class="msg ${m.role}"><b>${m.role}:</b> ${m.text}</div>`;
+        c.innerHTML += `<div class="msg ${m.role}">${m.text}</div>`;
     }
+
     c.scrollTop = c.scrollHeight;
 }
 
