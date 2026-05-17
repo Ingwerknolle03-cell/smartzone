@@ -40,7 +40,6 @@ body {
     border-radius: 4px;
     cursor: pointer;
 }
-
 .term:hover {
     background: #bfbfbf;
 }
@@ -68,31 +67,56 @@ let chat = JSON.parse(localStorage.getItem("chat") || "[]");
 /* ------------------ WISSEN ------------------ */
 
 const knowledge = {
-    pflanze: "Pflanzen sind autotrophe Lebewesen. Sie betreiben Photosynthese.",
+    pflanze: "Pflanzen sind autotrophe Lebewesen. Sie betreiben Photosynthese und erzeugen Energie aus Licht.",
     photosynthese: "CO2 + Wasser + Licht → Glucose + Sauerstoff.",
-    chlorophyll: "Chlorophyll ist der grüne Farbstoff der Pflanzen.",
-    boden: "Boden besteht aus Mineralien, Humus, Wasser und Luft.",
-    ökosystem: "Ein Ökosystem besteht aus Lebewesen und ihrer Umwelt.",
-    mykorrhiza: "Symbiose zwischen Pilzen und Pflanzenwurzeln.",
-    wald: "Ein Wald ist ein komplexes Ökosystem."
+    chlorophyll: "Chlorophyll ist der grüne Farbstoff der Pflanzen und zentral für Photosynthese.",
+    boden: "Boden besteht aus Mineralien, Humus, Wasser, Luft und Mikroorganismen.",
+    ökosystem: "Ein Ökosystem besteht aus Lebewesen und ihrer Umwelt in ständiger Wechselwirkung.",
+    wald: "Ein Wald ist ein komplexes Ökosystem mit vielen Tier- und Pflanzenarten.",
+    mykorrhiza: "Symbiose zwischen Pilzen und Pflanzenwurzeln zur besseren Nährstoffaufnahme.",
+    biodiversität: "Biodiversität beschreibt die Vielfalt von Arten, Genen und Ökosystemen.",
+    zellatmung: "Zellatmung: Glucose + Sauerstoff → Energie + CO2 + Wasser.",
+    pflanzenwachstum: "Pflanzenwachstum hängt von Licht, Wasser, Temperatur und Nährstoffen ab.",
+    stickstoffkreislauf: "Der Stickstoffkreislauf beschreibt die Umwandlung von Stickstoff in der Natur.",
+    kohlenstoffkreislauf: "Der Kohlenstoffkreislauf beschreibt die Bewegung von Kohlenstoff zwischen Atmosphäre und Biosphäre."
 };
 
-/* ------------------ LISTEN ------------------ */
+/* ------------------ WALDPFLANZEN ------------------ */
 
 const forestPlants = [
 "Buche","Eiche","Ahorn","Fichte","Tanne",
 "Kiefer","Birke","Esche","Ulme","Lärche",
 "Hasel","Eberesche","Weide","Linde","Hainbuche",
-"Holunder","Schlehe","Himbeere","Brombeere","Moos","Farn"
+"Holunder","Schlehe","Himbeere","Brombeere","Moos","Farn",
+"Wacholder","Douglasie","Rotbuche","Waldmeister","Veilchen"
 ];
+
+/* ------------------ PILZE ------------------ */
+
+const mushrooms = {
+    fliegenpilz: "Fliegenpilz: giftig, rot mit weißen Punkten.",
+    steinpilz: "Steinpilz: essbar, sehr wertvoller Speisepilz.",
+    champignon: "Champignon: häufig, essbar."
+};
+
+/* ------------------ IT ------------------ */
+
+const it = {
+    python: "Python ist eine Programmiersprache für KI, Datenanalyse und Automatisierung.",
+    linux: "Linux ist ein Betriebssystem. Wichtige Befehle: ls, cd, rm, mkdir.",
+    network: "Netzwerke bestehen aus IP, Router, DNS und Datenpaketen.",
+    ls: "ls zeigt Dateien im aktuellen Verzeichnis.",
+    cd: "cd wechselt das Verzeichnis.",
+    rm: "rm löscht Dateien (vorsichtig)."
+};
 
 /* ------------------ SPRACHE ------------------ */
 
 function isEnglish(text) {
     const t = text.toLowerCase();
 
-    const en = ["the","plant","forest","mushroom","what","how","is","are","soil","tree","ecosystem","photosynthesis"];
-    const de = ["der","die","das","pflanze","wald","pilz","was","wie","boden","baum","ökosystem","photosynthese"];
+    const en = ["the","plant","forest","mushroom","what","how","is","are","soil","tree","ecosystem","photosynthesis","cycle"];
+    const de = ["der","die","das","pflanze","wald","pilz","was","wie","boden","baum","ökosystem","photosynthese","kreislauf"];
 
     let enScore = en.filter(w => t.includes(w)).length;
     let deScore = de.filter(w => t.includes(w)).length;
@@ -100,19 +124,19 @@ function isEnglish(text) {
     return enScore >= deScore;
 }
 
-/* ------------------ FIX: STABILES LINKIFY ------------------ */
-/* Umlaute + letzte Vorkommen sauber klickbar */
+/* ------------------ STABILES LINKIFY ------------------ */
 
 function linkify(text) {
-    for (let key in knowledge) {
 
-        const regex = new RegExp(`(^|[^a-zA-ZäöüÄÖÜ0-9])(${key})(?=$|[^a-zA-ZäöüÄÖÜ0-9])`, "gi");
+    const keys = Object.keys(knowledge)
+        .sort((a,b) => b.length - a.length)
+        .join("|");
 
-        text = text.replace(regex, (match, pre, word) => {
-            return `${pre}<span class="term" onclick="showInfo('${key}')">${word}</span>`;
-        });
-    }
-    return text;
+    const regex = new RegExp(`(^|[^a-zA-ZäöüÄÖÜ0-9])(${keys})(?=$|[^a-zA-ZäöüÄÖÜ0-9])`, "gi");
+
+    return text.replace(regex, (match, pre, word) => {
+        return `${pre}<span class="term" onclick="showInfo('${word.toLowerCase()}')">${word}</span>`;
+    });
 }
 
 /* ------------------ CLICK INFO ------------------ */
@@ -131,8 +155,8 @@ function reply(input) {
 
     if (text.includes("hallo") || text.includes("hi") || text.includes("hello")) {
         return en
-            ? "I am your forest and plant assistant."
-            : "Ich bin dein Wald- und Pflanzenassistent.";
+            ? "I am your forest and ecology assistant."
+            : "Ich bin dein Wald- und Ökosystem-Assistent.";
     }
 
     if (text.includes("pflanze") || text.includes("plant")) return knowledge.pflanze;
@@ -145,6 +169,14 @@ function reply(input) {
         return en
             ? "Forest plants: " + forestPlants.join(", ")
             : "Waldpflanzen: " + forestPlants.join(", ");
+    }
+
+    for (let m in mushrooms) {
+        if (text.includes(m)) return mushrooms[m];
+    }
+
+    for (let k in it) {
+        if (text.includes(k)) return it[k];
     }
 
     return en
