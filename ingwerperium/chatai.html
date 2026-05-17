@@ -32,7 +32,6 @@ body {
     color: #1f4d3a;
 }
 
-/* klickbare Begriffe */
 .term {
     color: #1f4e79;
     background: #d7d7d7;
@@ -40,6 +39,7 @@ body {
     border-radius: 4px;
     cursor: pointer;
 }
+
 .term:hover {
     background: #bfbfbf;
 }
@@ -64,50 +64,61 @@ body {
 <script>
 let chat = JSON.parse(localStorage.getItem("chat") || "[]");
 
-/* ------------------ WISSEN ------------------ */
+/* ------------------ WISSEN DE ------------------ */
 
-const knowledge = {
-    pflanze: "Pflanzen sind autotrophe Lebewesen. Sie betreiben Photosynthese und erzeugen Energie aus Licht.",
+const knowledge_de = {
+    pflanze: "Pflanzen sind autotrophe Lebewesen. Sie betreiben Photosynthese.",
     photosynthese: "CO2 + Wasser + Licht → Glucose + Sauerstoff.",
-    chlorophyll: "Chlorophyll ist der grüne Farbstoff der Pflanzen und zentral für Photosynthese.",
-    boden: "Boden besteht aus Mineralien, Humus, Wasser, Luft und Mikroorganismen.",
-    ökosystem: "Ein Ökosystem besteht aus Lebewesen und ihrer Umwelt in ständiger Wechselwirkung.",
-    wald: "Ein Wald ist ein komplexes Ökosystem mit vielen Tier- und Pflanzenarten.",
-    mykorrhiza: "Symbiose zwischen Pilzen und Pflanzenwurzeln zur besseren Nährstoffaufnahme.",
-    biodiversität: "Biodiversität beschreibt die Vielfalt von Arten, Genen und Ökosystemen.",
-    zellatmung: "Zellatmung: Glucose + Sauerstoff → Energie + CO2 + Wasser.",
-    pflanzenwachstum: "Pflanzenwachstum hängt von Licht, Wasser, Temperatur und Nährstoffen ab.",
-    stickstoffkreislauf: "Der Stickstoffkreislauf beschreibt die Umwandlung von Stickstoff in der Natur.",
-    kohlenstoffkreislauf: "Der Kohlenstoffkreislauf beschreibt die Bewegung von Kohlenstoff zwischen Atmosphäre und Biosphäre."
+    chlorophyll: "Chlorophyll ist der grüne Farbstoff für Photosynthese.",
+    boden: "Boden besteht aus Mineralien, Humus, Wasser und Mikroorganismen.",
+    ökosystem: "Ein Ökosystem besteht aus Lebewesen und ihrer Umwelt.",
+    wald: "Ein Wald ist ein komplexes Ökosystem mit vielen Arten.",
+    mykorrhiza: "Symbiose zwischen Pilzen und Pflanzenwurzeln.",
+    biodiversität: "Biodiversität ist die Vielfalt von Arten und Ökosystemen.",
+    zellatmung: "Zellatmung erzeugt Energie aus Glucose und Sauerstoff.",
+    stickstoff: "Stickstoff ist wichtig für Pflanzenwachstum.",
+    kohlenstoff: "Kohlenstoff ist Grundlage aller organischen Moleküle."
+};
+
+/* ------------------ WISSEN EN ------------------ */
+
+const knowledge_en = {
+    plant: "Plants are autotrophic organisms that produce energy via photosynthesis.",
+    photosynthesis: "CO2 + water + light → glucose + oxygen.",
+    ecosystem: "An ecosystem is a system of organisms interacting with their environment.",
+    forest: "A forest is a complex ecosystem with many species.",
+    soil: "Soil consists of minerals, organic matter, water and organisms.",
+    biodiversity: "Biodiversity is the variety of life in ecosystems.",
+    chlorophyll: "Chlorophyll is the green pigment used in photosynthesis.",
 };
 
 /* ------------------ WALDPFLANZEN ------------------ */
 
 const forestPlants = [
-"Buche","Eiche","Ahorn","Fichte","Tanne",
-"Kiefer","Birke","Esche","Ulme","Lärche",
-"Hasel","Eberesche","Weide","Linde","Hainbuche",
+"Buche","Eiche","Ahorn","Fichte","Tanne","Kiefer","Birke","Esche",
+"Ulme","Lärche","Hasel","Eberesche","Weide","Linde","Hainbuche",
 "Holunder","Schlehe","Himbeere","Brombeere","Moos","Farn",
-"Wacholder","Douglasie","Rotbuche","Waldmeister","Veilchen"
+"Wacholder","Douglasie","Waldmeister","Veilchen","Kastanie"
 ];
 
 /* ------------------ PILZE ------------------ */
 
 const mushrooms = {
-    fliegenpilz: "Fliegenpilz: giftig, rot mit weißen Punkten.",
-    steinpilz: "Steinpilz: essbar, sehr wertvoller Speisepilz.",
-    champignon: "Champignon: häufig, essbar."
+    fliegenpilz: "Fliegenpilz ist giftig und rot mit weißen Punkten.",
+    steinpilz: "Steinpilz ist ein essbarer Edelpilz.",
+    champignon: "Champignon ist ein häufiger Speisepilz.",
+    pfifferling: "Pfifferling ist gelb und essbar."
 };
 
 /* ------------------ IT ------------------ */
 
 const it = {
-    python: "Python ist eine Programmiersprache für KI, Datenanalyse und Automatisierung.",
-    linux: "Linux ist ein Betriebssystem. Wichtige Befehle: ls, cd, rm, mkdir.",
-    network: "Netzwerke bestehen aus IP, Router, DNS und Datenpaketen.",
-    ls: "ls zeigt Dateien im aktuellen Verzeichnis.",
-    cd: "cd wechselt das Verzeichnis.",
-    rm: "rm löscht Dateien (vorsichtig)."
+    python: "Python ist eine einfache Programmiersprache für KI und Daten.",
+    linux: "Linux ist ein Betriebssystem mit vielen Terminalbefehlen.",
+    network: "Netzwerke bestehen aus IP, Router und DNS.",
+    ls: "ls zeigt Dateien im Ordner.",
+    cd: "cd wechselt den Ordner.",
+    rm: "rm löscht Dateien."
 };
 
 /* ------------------ SPRACHE ------------------ */
@@ -115,8 +126,8 @@ const it = {
 function isEnglish(text) {
     const t = text.toLowerCase();
 
-    const en = ["the","plant","forest","mushroom","what","how","is","are","soil","tree","ecosystem","photosynthesis","cycle"];
-    const de = ["der","die","das","pflanze","wald","pilz","was","wie","boden","baum","ökosystem","photosynthese","kreislauf"];
+    const en = ["the","forest","plant","plants","mushroom","ecosystem","soil","tree","what","how","is","are"];
+    const de = ["der","die","das","wald","pflanze","pflanzen","pilz","ökosystem","boden","baum","was","wie"];
 
     let enScore = en.filter(w => t.includes(w)).length;
     let deScore = de.filter(w => t.includes(w)).length;
@@ -124,11 +135,11 @@ function isEnglish(text) {
     return enScore >= deScore;
 }
 
-/* ------------------ STABILES LINKIFY ------------------ */
+/* ------------------ LINKIFY (STABIL) ------------------ */
 
-function linkify(text) {
+function linkify(text, dict) {
 
-    const keys = Object.keys(knowledge)
+    const keys = Object.keys(dict)
         .sort((a,b) => b.length - a.length)
         .join("|");
 
@@ -142,9 +153,17 @@ function linkify(text) {
 /* ------------------ CLICK INFO ------------------ */
 
 function showInfo(key) {
-    chat.push({role:"bot", text:"→ " + knowledge[key]});
-    save();
-    render();
+    let msg =
+        knowledge_de[key] ||
+        knowledge_en[key] ||
+        mushrooms[key] ||
+        it[key];
+
+    if (msg) {
+        chat.push({role:"bot", text:"→ " + msg});
+        save();
+        render();
+    }
 }
 
 /* ------------------ BOT ------------------ */
@@ -153,30 +172,28 @@ function reply(input) {
     const text = input.toLowerCase();
     const en = isEnglish(input);
 
-    if (text.includes("hallo") || text.includes("hi") || text.includes("hello")) {
-        return en
-            ? "I am your forest and ecology assistant."
-            : "Ich bin dein Wald- und Ökosystem-Assistent.";
+    const dict = en ? knowledge_en : knowledge_de;
+
+    // Pflanzen / Wald
+    for (let k in dict) {
+        if (text.includes(k)) return dict[k];
     }
 
-    if (text.includes("pflanze") || text.includes("plant")) return knowledge.pflanze;
-    if (text.includes("photosynthese") || text.includes("photosynthesis")) return knowledge.photosynthese;
-    if (text.includes("wald") || text.includes("forest")) return knowledge.wald;
-    if (text.includes("ökosystem") || text.includes("ecosystem")) return knowledge.ökosystem;
-    if (text.includes("mykorrhiza")) return knowledge.mykorrhiza;
-
-    if (text.includes("waldpflanzen") || text.includes("forest plants")) {
-        return en
-            ? "Forest plants: " + forestPlants.join(", ")
-            : "Waldpflanzen: " + forestPlants.join(", ");
-    }
-
+    // Pilze
     for (let m in mushrooms) {
         if (text.includes(m)) return mushrooms[m];
     }
 
-    for (let k in it) {
-        if (text.includes(k)) return it[k];
+    // IT
+    for (let i in it) {
+        if (text.includes(i)) return it[i];
+    }
+
+    // Listen
+    if (text.includes("waldpflanzen") || text.includes("forest plants")) {
+        return en
+            ? "Forest plants: " + forestPlants.join(", ")
+            : "Waldpflanzen: " + forestPlants.join(", ");
     }
 
     return en
@@ -198,7 +215,8 @@ function render() {
         let text = m.text;
 
         if (m.role === "bot") {
-            text = linkify(text);
+            const dict = isEnglish(text) ? knowledge_en : knowledge_de;
+            text = linkify(text, dict);
         }
 
         c.innerHTML += `<div class="msg ${m.role}">${text}</div>`;
