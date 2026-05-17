@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Simple Local AI</title>
+<style>
+body {
+    font-family: monospace;
+    background: #e0e0e0;
+    margin: 0;
+}
+
+#chat {
+    height: 90vh;
+    overflow-y: auto;
+    padding: 10px;
+    border-bottom: 2px solid #999;
+}
+
+.msg {
+    margin: 8px 0;
+}
+
+.user {
+    color: blue;
+}
+
+.bot {
+    color: darkgreen;
+}
+
+#inputArea {
+    display: flex;
+}
+
+input {
+    flex: 1;
+    padding: 10px;
+    font-family: monospace;
+}
+
+button {
+    padding: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="chat"></div>
+
+<div id="inputArea">
+    <input id="input" placeholder="Frage eingeben...">
+    <button onclick="send()">Senden</button>
+</div>
+
+<script>
+let chat = JSON.parse(localStorage.getItem("chat") || "[]");
+
+function render() {
+    const c = document.getElementById("chat");
+    c.innerHTML = "";
+    chat.forEach(m => {
+        c.innerHTML += `<div class="msg ${m.role}"><b>${m.role}:</b> ${m.text}</div>`;
+    });
+    c.scrollTop = c.scrollHeight;
+}
+
+function save() {
+    localStorage.setItem("chat", JSON.stringify(chat));
+}
+
+function botReply(text) {
+    text = text.toLowerCase();
+
+    // einfache Regeln
+    if (text.includes("python")) {
+        return "Python ist eine Programmiersprache. Beispiel: print('Hallo Welt'). Ich kann dir Code schreiben.";
+    }
+
+    if (text.includes("pflanze") || text.includes("pflanzen")) {
+        return "Pflanzen brauchen Licht, Wasser und CO2. Viele Arten reagieren empfindlich auf Lichtmenge und Temperatur.";
+    }
+
+    if (text.includes("linux")) {
+        return "Linux ist ein Betriebssystem. Wichtige Befehle: ls, cd, mkdir, rm.";
+    }
+
+    if (text.includes("netzwerk")) {
+        return "Netzwerke verbinden Geräte. Wichtige Begriffe: IP-Adresse, Router, DNS.";
+    }
+
+    if (text.includes("hilfe")) {
+        return "Ich bin ein einfacher lokaler Assistent. Frag nach Python, Pflanzen, Linux oder Netzwerken.";
+    }
+
+    return "Ich habe dazu keine feste Regel. Stelle eine spezifischere Frage zu Python, Pflanzen, Linux oder Netzwerken.";
+}
+
+function send() {
+    const input = document.getElementById("input");
+    const text = input.value;
+    if (!text) return;
+
+    chat.push({role:"user", text});
+    chat.push({role:"bot", text: botReply(text)});
+
+    input.value = "";
+    save();
+    render();
+}
+
+render();
+</script>
+
+</body>
+</html>
