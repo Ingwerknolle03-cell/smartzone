@@ -2,45 +2,38 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Simple Local AI</title>
+<title>Offline Pflanzen & Wissens-Assistent</title>
+
 <style>
 body {
     font-family: monospace;
-    background: #e0e0e0;
+    background: #dcdcdc;
     margin: 0;
 }
 
 #chat {
-    height: 90vh;
+    height: 92vh;
     overflow-y: auto;
     padding: 10px;
     border-bottom: 2px solid #999;
 }
 
 .msg {
-    margin: 8px 0;
+    margin: 6px 0;
+    white-space: pre-wrap;
 }
 
-.user {
-    color: blue;
-}
+.user { color: navy; }
+.bot { color: darkgreen; }
 
-.bot {
-    color: darkgreen;
-}
-
-#inputArea {
-    display: flex;
-}
-
-input {
-    flex: 1;
-    padding: 10px;
+#input {
+    width: 100%;
+    padding: 12px;
     font-family: monospace;
-}
-
-button {
-    padding: 10px;
+    border: none;
+    border-top: 2px solid #999;
+    outline: none;
+    background: #f0f0f0;
 }
 </style>
 </head>
@@ -48,67 +41,104 @@ button {
 <body>
 
 <div id="chat"></div>
-
-<div id="inputArea">
-    <input id="input" placeholder="Frage eingeben...">
-    <button onclick="send()">Senden</button>
-</div>
+<input id="input" placeholder="Frage eingeben und Enter drücken...">
 
 <script>
 let chat = JSON.parse(localStorage.getItem("chat") || "[]");
-
-function render() {
-    const c = document.getElementById("chat");
-    c.innerHTML = "";
-    chat.forEach(m => {
-        c.innerHTML += `<div class="msg ${m.role}"><b>${m.role}:</b> ${m.text}</div>`;
-    });
-    c.scrollTop = c.scrollHeight;
-}
 
 function save() {
     localStorage.setItem("chat", JSON.stringify(chat));
 }
 
-function botReply(text) {
-    text = text.toLowerCase();
+function render() {
+    const c = document.getElementById("chat");
+    c.innerHTML = "";
+    for (let m of chat) {
+        c.innerHTML += `<div class="msg ${m.role}"><b>${m.role}:</b> ${m.text}</div>`;
+    }
+    c.scrollTop = c.scrollHeight;
+}
 
-    // einfache Regeln
-    if (text.includes("python")) {
-        return "Python ist eine Programmiersprache. Beispiel: print('Hallo Welt'). Ich kann dir Code schreiben.";
+/* ------------------- WISSENSBASIS ------------------- */
+
+function botReply(input) {
+    const text = input.toLowerCase();
+
+    // --- SMALLTALK ---
+    if (text.includes("hallo") || text.includes("hi")) {
+        return "Hallo. Ich kann dir helfen mit Pflanzen, Python, Linux, Netzwerken oder allgemeinen Fragen.";
     }
 
+    if (text.includes("wie geht")) {
+        return "Mir geht es funktional gut. Stelle mir eine konkrete Frage.";
+    }
+
+    // --- PFLANZEN WISSEN (ERWEITERT) ---
     if (text.includes("pflanze") || text.includes("pflanzen")) {
-        return "Pflanzen brauchen Licht, Wasser und CO2. Viele Arten reagieren empfindlich auf Lichtmenge und Temperatur.";
+        return "Pflanzen sind autotrophe Organismen. Sie betreiben Photosynthese:\n" +
+               "CO2 + Wasser + Licht → Glucose + Sauerstoff\n\n" +
+               "Wichtige Faktoren:\n" +
+               "- Licht (Intensität + Spektrum)\n" +
+               "- Wasser (nicht zu viel, nicht zu wenig)\n" +
+               "- Boden (Nährstoffe: NPK = Stickstoff, Phosphor, Kalium)\n" +
+               "- Temperatur\n\n" +
+               "Beispiele:\n" +
+               "- Monstera: braucht indirektes Licht\n" +
+               "- Kakteen: wenig Wasser, viel Licht\n" +
+               "- Farn: hohe Luftfeuchtigkeit";
+    }
+
+    if (text.includes("photosynthese")) {
+        return "Photosynthese ist der Prozess, bei dem Pflanzen Lichtenergie nutzen, um aus CO2 und Wasser Zucker zu erzeugen.";
+    }
+
+    if (text.includes("wasser") && text.includes("pflanze")) {
+        return "Zu viel Wasser führt zu Wurzelfäule. Pflanzen brauchen Sauerstoff im Boden.";
+    }
+
+    if (text.includes("dünger")) {
+        return "Dünger liefert Nährstoffe:\n- N (Wachstum)\n- P (Wurzeln)\n- K (Stabilität)\nÜberdüngung kann Pflanzen schädigen.";
+    }
+
+    // --- IT / PROGRAMMIEREN ---
+    if (text.includes("python")) {
+        return "Python Beispiel:\n\nprint('Hallo Welt')\n\nPython ist gut für KI, Daten und Automatisierung.";
     }
 
     if (text.includes("linux")) {
-        return "Linux ist ein Betriebssystem. Wichtige Befehle: ls, cd, mkdir, rm.";
+        return "Linux Befehle:\nls = Dateien\ncd = Ordner wechseln\nmkdir = Ordner erstellen\nrm = löschen";
     }
 
     if (text.includes("netzwerk")) {
-        return "Netzwerke verbinden Geräte. Wichtige Begriffe: IP-Adresse, Router, DNS.";
+        return "Netzwerke bestehen aus IP, Router und DNS. Geräte kommunizieren über Pakete.";
     }
 
-    if (text.includes("hilfe")) {
-        return "Ich bin ein einfacher lokaler Assistent. Frag nach Python, Pflanzen, Linux oder Netzwerken.";
+    // --- ALLGEMEIN ---
+    if (text.includes("erkläre")) {
+        return "Ich erkläre dir das einfach. Stelle die Frage genauer.";
     }
 
-    return "Ich habe dazu keine feste Regel. Stelle eine spezifischere Frage zu Python, Pflanzen, Linux oder Netzwerken.";
+    return "Ich habe dazu kein festes Wissen hinterlegt. Frag nach Pflanzen, Python, Linux oder Netzwerken.";
 }
 
-function send() {
-    const input = document.getElementById("input");
-    const text = input.value;
+/* ------------------- CHAT ------------------- */
+
+function send(text) {
     if (!text) return;
 
     chat.push({role:"user", text});
     chat.push({role:"bot", text: botReply(text)});
 
-    input.value = "";
     save();
     render();
 }
+
+document.getElementById("input").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        send(this.value);
+        this.value = "";
+    }
+});
 
 render();
 </script>
