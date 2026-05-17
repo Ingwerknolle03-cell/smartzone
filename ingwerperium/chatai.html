@@ -105,26 +105,29 @@ function isEnglish(text) {
 
 /* ------------------ LINKIFY ------------------ */
 
-function linkifyLastOnly(text) {
+function linkify(text) {
     for (let key in knowledge) {
         const regex = new RegExp(`\\b${key}\\b`, "gi");
 
-        let matches = [...text.matchAll(regex)];
-        if (matches.length > 1) {
-            let i = 0;
-            text = text.replace(regex, match => {
-                let index = i++;
-                if (index === matches.length - 1) {
-                    return `<span class="term" onclick="showInfo('${key}')">${match}</span>`;
-                }
-                return match;
-            });
-        } else {
-            text = text.replace(regex,
-                match => `<span class="term" onclick="showInfo('${key}')">${match}</span>`
-            );
-        }
+        const matches = [...text.matchAll(regex)];
+
+        if (matches.length === 0) continue;
+
+        const lastIndex = matches[matches.length - 1].index;
+
+        let i = 0;
+
+        text = text.replace(regex, match => {
+            const currentIndex = i++;
+
+            if (currentIndex === matches.length - 1) {
+                return `<span class="term" onclick="showInfo('${key}')">${match}</span>`;
+            }
+
+            return match;
+        });
     }
+
     return text;
 }
 
